@@ -1,7 +1,6 @@
-# dwebmvcboiler
+# Lets
 
- This project is created to be a boilerplate/framework for my web projects. My goal is to make it robust, easy to add functions and have a quick turnaround on all clientside code.
+A social network aimed at meeting people face to face.
+The main goal is making it easy to find something to do where ever you are with friends, strangers or both.
 
-Quick turnaround comes from being able to edit html, css and script and add such files without recompiling. I have planned to make it very clientside driven. All data access goes through ajax with a framework for controlling access rights.
-
-It is also prepared with mongo database, websocket, a background daemon process and a testing framework. 
+Lets meet, lets get closer, lets go!
