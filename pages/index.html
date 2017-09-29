@@ -1,0 +1,65 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Mood</title>
+	<link rel="stylesheet" href="/source/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/source/css/index.css">
+</head>
+<body>
+	<div class="maingrid">
+		<div class="header">
+			<div class="pull-left">
+				<button class="btn btn-link" data-bind="click: my_events">My events</button>
+			</div>
+			<div class="pull-right">
+				<button class="btn btn-link" data-bind="click: sign_out">Sign out</button>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+
+		<div class="content">
+			<input id="search" type="text" placeholder="Enter a location">
+			
+			<div id="map"></div>
+			
+			<div style="display: none;">
+				<div id="form">
+					<table>
+						<tr>
+							<td>Name:</td>
+							<td><input type='text' id='name'/></td>
+						</tr>
+						<tr>
+							<td>Address:</td>
+							<td><input type='text' id='address'/></td>
+						</tr>
+						<tr>
+							<td>Type:</td>
+							<td>
+								<select id='type'> +
+									<option value='bar' SELECTED>bar</option>
+									<option value='restaurant'>restaurant</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><input type='button' value='Save' onclick='saveData()'/></td>
+						</tr>
+					</table>
+				</div>
+				<div id="message">Location saved</div>
+			</div>
+		</div>
+	</div>
+
+	<script type='text/javascript' src='/source/js/lib/knockout-3.4.1.js'></script>
+	<script type='text/javascript' src='/source/js/lib/jquery-2.1.3.min.js'></script>
+	<script type='text/javascript' src='/source/js/lib/bootstrap.min.js'></script>
+	<script type='text/javascript' src='/source/js/common.js'></script>
+	<script type='text/javascript' src='/source/js/app/userViewModel.js'></script>
+	<script type='text/javascript' src='/source/js/app/event.js'></script>
+</body>
+</html>
