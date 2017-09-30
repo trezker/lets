@@ -57,8 +57,8 @@ event {
 		return res;
 	}
 }
-
-//Create user without parameters should fail.
+/*
+//Create event without parameters should fail.
 unittest {
 	Database database = GetDatabase("test");
 	
@@ -74,7 +74,8 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
-
+*/
+/*
 //Create user with name and password should succeed
 unittest {
 	Database database = GetDatabase("test");
@@ -94,27 +95,4 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
-
-//Created user should have a hashed password
-unittest {
-	Database database = GetDatabase("test");
-	
-	try {
-		string username = "testname";
-		string password = "testpass";
-
-		auto user_storage = new User_storage(database);
-		CreateUser m = new CreateUser(user_storage);
-		JSONValue jsoninput;
-		jsoninput["username"] = username;
-		jsoninput["password"] = password;
-
-		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
-		
-		auto obj = user_storage.UserByName(username);
-		assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
-	}
-	finally {
-		database.ClearCollection("user");
-	}
-}
+*/

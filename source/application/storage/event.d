@@ -19,10 +19,10 @@ struct Location {
 }
 
 struct Event {
-	string user_id;
+	string userId;
 	string title;
 	string description;
-	SysTime created_date;
+	SysTime createdTime;
 	SysTime startTime;
 	SysTime endTime;
 	Location location;
@@ -38,21 +38,7 @@ class Event_storage {
 
 	void Create(Event event) {
 		try {
-			Bson serializedEvent = serialize!BsonSerializer(event);
-			collection.insert(serializedEvent);
-			/*
-			collection.insert(
-				Bson([
-					"UserId": Bson(event.UserId),
-					"Title": Bson(event.Title),
-					"Description": Bson(event.Description),
-					"CreatedTime": Bson(event.CreatedTime),
-					"StartTime": Bson(event.StartTime),
-					"EndTime": Bson(event.EndTime),
-					"Location": Bson(event.Location)
-				])
-			);
-			*/
+			collection.insert(event);
 		}
 		catch(Exception e) {
 			//if(!canFind(e.msg, "duplicate key error")) {
@@ -63,12 +49,13 @@ class Event_storage {
 	}
 }
 
+//Create a valid event
 unittest {
 	Event event = {
-		user_id: "t",
+		userId: "t",
 		title: "Title",
 		description: "Description",
-		created_date: Clock.currTime(),
+		createdTime: Clock.currTime(),
 		startTime: Clock.currTime(),
 		endTime: Clock.currTime(),
 		location: {
@@ -76,4 +63,8 @@ unittest {
 			longitude: 2
 		}
 	};
+
+	Database database = GetDatabase("test");
+	auto event_storage = new Event_storage(database);
+	event_storage.Create(event);
 }
