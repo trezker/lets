@@ -28,6 +28,13 @@ struct Event {
 	Location location;
 }
 
+struct EventSearch {
+	Location location;
+	double radius;
+	SysTime fromTime;
+	SysTime toTime;
+}
+
 class Event_storage {
 	Database database;
 	MongoCollection collection;
@@ -37,34 +44,93 @@ class Event_storage {
 	}
 
 	void Create(Event event) {
-		try {
-			collection.insert(event);
-		}
-		catch(Exception e) {
-			//if(!canFind(e.msg, "duplicate key error")) {
-				//log unexpected exception
-			//}
-			throw e;
-		}
+		collection.insert(event);
+	}
+
+	Event[] Find(EventSearch eventSearch) {
+		auto conditions = Bson([
+			"location.latitude": Bson(["$gte": Bson(1)])
+		]);
+		return MongoArray!(Event)(collection, conditions);
 	}
 }
 
-//Create a valid event
+//Creating a valid event should succeed
 unittest {
-	Event event = {
-		userId: "t",
-		title: "Title",
-		description: "Description",
-		createdTime: Clock.currTime(),
-		startTime: Clock.currTime(),
-		endTime: Clock.currTime(),
-		location: {
-			latitude: 1,
-			longitude: 2
-		}
-	};
-
 	Database database = GetDatabase("test");
-	auto event_storage = new Event_storage(database);
-	event_storage.Create(event);
+	try {
+		Event event = {
+			userId: "t",
+			title: "Title",
+			description: "Description",
+			createdTime: Clock.currTime(),
+			startTime: Clock.currTime(),
+			endTime: Clock.currTime(),
+			location: {
+				latitude: 1,
+				longitude: 2
+			}
+		};
+
+		auto event_storage = new Event_storage(database);
+		event_storage.Create(event);
+	}
+	finally {
+		database.ClearCollection("event");
+	}
+}
+
+//Find events in area should return all events in the area
+unittest {
+	Database database = GetDatabase("test");
+	try {
+		Event eventInside = {
+			userId: "t",
+			title: "Inside",
+			description: "Description",
+			createdTime: Clock.currTime(),
+			startTime: Clock.currTime(),
+			endTime: Clock.currTime(),
+			location: {
+				latitude: 2,
+				longitude: 2
+			}
+		};
+		Event eventOutside = {
+			userId: "t",
+			title: "Outside",
+			description: "Description",
+			createdTime: Clock.currTime(),
+			startTime: Clock.currTime(),
+			endTime: Clock.currTime(),
+			location: {
+				latitude: 6,
+				longitude: 8
+			}
+		};
+
+		auto event_storage = new Event_storage(database);
+		event_storage.Create(eventInside);
+		event_storage.Create(eventOutside);
+
+		EventSearch search = {
+			location: {
+				latitude: 3,
+				longitude: 3
+			},
+			radius: 2,
+			fromTime: Clock.currTime(),
+			toTime: Clock.currTime()
+		};
+
+		auto events = event_storage.Find(search);
+
+		foreach(e; events) {
+			assertEqual("Inside", e.title);
+		}
+		writeln(events);
+	}
+	finally {
+		database.ClearCollection("event");
+	}
 }
