@@ -49,7 +49,10 @@ class Event_storage {
 
 	Event[] Find(EventSearch eventSearch) {
 		auto conditions = Bson([
-			"location.latitude": Bson(["$gte": Bson(1)])
+			"location.latitude": Bson(["$gte": Bson(eventSearch.location.latitude - eventSearch.radius)]),
+			"location.latitude": Bson(["$lte": Bson(eventSearch.location.latitude + eventSearch.radius)]),
+			"location.longitude": Bson(["$gte": Bson(eventSearch.location.longitude - eventSearch.radius)]),
+			"location.longitude": Bson(["$lte": Bson(eventSearch.location.longitude + eventSearch.radius)])
 		]);
 		return MongoArray!(Event)(collection, conditions);
 	}
