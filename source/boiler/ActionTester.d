@@ -178,7 +178,7 @@ class JsonInputDummyHandler {
 
 	HttpResponse handleRequest(HttpRequest request) {
 		HttpResponse response = new HttpResponse;
-		if(request.json["data"].integer == 4) {
+		if(request.json["data"].to!int == 4) {
 			receivedJson = true;
 		}
 		return response;

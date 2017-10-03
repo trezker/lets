@@ -17,7 +17,7 @@ interface Action {
 class HttpRequest {
 	private SessionStore sessionstore;
 	Session session;
-	JSONValue json;
+	Json json;
 	string path;
 
 	this(SessionStore sessionstore) {
@@ -25,7 +25,7 @@ class HttpRequest {
 	}
 
 	void SetJsonFromString(string jsonstring) {
-		json = parseJSON(jsonstring);
+		json = parseJsonString(jsonstring);
 	}
 
 	Session StartSession() {
@@ -76,7 +76,7 @@ unittest {
 	auto request = new HttpRequest(sessionstore);
 	request.SetJsonFromString(json.toString);
 
-	assertEqual(request.json["key"].str, "value");
+	assertEqual(request.json["key"].to!string, "value");
 }
 
 //Request can start a session

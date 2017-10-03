@@ -126,8 +126,8 @@ unittest {
 
 		auto events = event_storage.Find(search);
 
-		writeln(events);
-		//assertEqual(2, events.length);
+		//writeln(events);
+		assertEqual(2, events.length);
 		foreach(e; events) {
 			assertEqual("Inside", e.title);
 		}

@@ -20,7 +20,7 @@ class Ajax: Action {
 	public HttpResponse Perform(HttpRequest req) {
 		HttpResponse res;
 		try {
-			string actionName = req.json["action"].str;
+			string actionName = req.json["action"].to!string;
 			if(actionName in actionCreators) {
 				Action action = actionCreators[actionName]();
 				res = action.Perform (req);

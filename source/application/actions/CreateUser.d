@@ -24,8 +24,8 @@ class CreateUser: Action {
 		HttpResponse res = new HttpResponse;
 		try {
 			//Read parameters
-			string username = req.json["username"].str;
-			string password = req.json["password"].str;
+			string username = req.json["username"].to!string;
+			string password = req.json["password"].to!string;
 
 			//Check that username is not taken
 			auto obj = user_storage.UserByName(username);
