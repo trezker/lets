@@ -26,7 +26,7 @@ class CreateEvent: Action {
 		try {
 			Event event = deserialize!(JsonSerializer, Event)(req.json);
 
-			//event_storage.Create(event);
+			event_storage.Create(event);
 
 			//Write result
 			JSONValue json;
