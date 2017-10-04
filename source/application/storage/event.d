@@ -47,7 +47,7 @@ class Event_storage {
 		collection.insert(event);
 	}
 
-	Event[] Find(EventSearch eventSearch) {
+	Event[] FindInArea(EventSearch eventSearch) {
 		auto conditions = Bson([
 			"location.latitude": Bson([
 				"$gte": Bson(eventSearch.location.latitude - eventSearch.radius),
@@ -124,7 +124,7 @@ unittest {
 			toTime: Clock.currTime()
 		};
 
-		auto events = event_storage.Find(search);
+		auto events = event_storage.FindInArea(search);
 
 		//writeln(events);
 		assertEqual(2, events.length);

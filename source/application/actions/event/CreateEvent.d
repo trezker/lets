@@ -12,7 +12,6 @@ import boiler.HttpRequest;
 import boiler.HttpResponse;
 import application.Database;
 import application.storage.event;
-	import std.datetime;
 
 class CreateEvent: Action {
 	Event_storage event_storage;
@@ -21,10 +20,14 @@ class CreateEvent: Action {
 		this.event_storage = event_storage;
 	}
 
-	HttpResponse Perform(HttpRequest req) {
+	HttpResponse Perform(HttpRequest request) {
 		HttpResponse res = new HttpResponse;
 		try {
-			Event event = deserialize!(JsonSerializer, Event)(req.json);
+			if(!request.session) {
+				throw new Exception("User not logged in");
+			}
+			Event event = deserialize!(JsonSerializer, Event)(request.json);
+			event.userId = request.session.get!string("id");
 
 			event_storage.Create(event);
 
@@ -34,6 +37,7 @@ class CreateEvent: Action {
 			res.writeBody(json.toString, 200);
 		}
 		catch(Exception e) {
+			//writeln(e);
 			//Write result
 			JSONValue json;
 			json["success"] = false;
@@ -60,7 +64,7 @@ unittest {
 	}
 }
 
-//Create event with all parameters should succeed
+//Create event with all parameters but not logged in should fail
 unittest {
 	import std.datetime;
 	Database database = GetDatabase("test");
@@ -68,7 +72,6 @@ unittest {
 	try {
 		CreateEvent m = new CreateEvent(new Event_storage(database));
 		Event event = {
-			userId: "t",
 			title: "Title",
 			description: "Description",
 			createdTime: Clock.currTime(),
@@ -84,9 +87,45 @@ unittest {
 		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 		JSONValue jsonoutput = tester.GetResponseJson();
+		assert(jsonoutput["success"] == JSONValue(false));
+	}
+	finally {
+		database.ClearCollection("event");
+	}
+}
+
+//Create event with all parameters and logged in should succeed
+unittest {
+	import std.datetime;
+	import application.testhelpers;
+
+	Database database = GetDatabase("test");
+	
+	try {
+		CreateTestUser("testname", "testpass");
+		auto tester = TestLogin("testname", "testpass");
+
+		CreateEvent m = new CreateEvent(new Event_storage(database));
+		Event event = {
+			title: "Title",
+			description: "Description",
+			createdTime: Clock.currTime(),
+			startTime: Clock.currTime(),
+			endTime: Clock.currTime(),
+			location: {
+				latitude: 1,
+				longitude: 2
+			}
+		};
+		Json jsoninput = serialize!(JsonSerializer, Event)(event);
+
+		tester.Request(&m.Perform, jsoninput.toString);
+
+		JSONValue jsonoutput = tester.GetResponseJson();
 		assert(jsonoutput["success"] == JSONValue(true));
 	}
 	finally {
 		database.ClearCollection("event");
+		database.ClearCollection("user");
 	}
 }
