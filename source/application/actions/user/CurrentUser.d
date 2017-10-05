@@ -52,15 +52,16 @@ unittest {
 	Database database = GetDatabase("test");
 	
 	try {
-		CreateTestUser("testname", "testpass");
-		auto tester = TestLogin("testname", "testpass");
+		string username = "testname";
+		CreateTestUser(username, "testpass");
+		auto tester = TestLogin(username, "testpass");
 
 		CurrentUser currentUser = new CurrentUser(new User_storage(database));
 		tester.Request(&currentUser.Perform);
 		
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(true));
-		assert(json["username"] == JSONValue("testname"));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, true);
+		assertEqual(jsonoutput["username"].to!string, username);
 	}
 	finally {
 		database.ClearCollection("user");
@@ -79,9 +80,9 @@ unittest {
 		CurrentUser currentUser = new CurrentUser(new User_storage(database));
 		ActionTester tester = new ActionTester(&currentUser.Perform);
 		
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(true));
-		assert(json["username"] == JSONValue(""));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, true);
+		assertEqual(jsonoutput["username"].to!string, "");
 	}
 	finally {
 		database.ClearCollection("user");

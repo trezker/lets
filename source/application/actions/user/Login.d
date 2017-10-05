@@ -78,8 +78,8 @@ unittest {
 
 		ActionTester tester = new ActionTester(&m.Perform);
 
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(false));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, false);
 	}
 	finally {
 		database.ClearCollection("user");
@@ -93,8 +93,8 @@ unittest {
 	try {
 		auto tester = TestLogin("testname", "testpass");
 
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(false));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, false);
 	}
 	finally {
 		database.ClearCollection("user");
@@ -112,8 +112,8 @@ unittest {
 
 		auto tester = TestLogin("testname", "testpass");
 
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(true));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, true);
 		string id = tester.GetResponseSessionValue!string("id");
 		assertNotEqual(id, "");
 	}
@@ -133,8 +133,8 @@ unittest {
 
 		auto tester = TestLogin("testname", "wrong");
 
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(false));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, false);
 	}
 	finally {
 		database.ClearCollection("user");

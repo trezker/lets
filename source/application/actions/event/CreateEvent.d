@@ -56,8 +56,8 @@ unittest {
 
 		ActionTester tester = new ActionTester(&m.Perform);
 
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(false));
+		Json json = tester.GetResponseJson();
+		assertEqual(json["success"].to!bool, false);
 	}
 	finally {
 		database.ClearCollection("event");
@@ -86,8 +86,8 @@ unittest {
 
 		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
-		JSONValue jsonoutput = tester.GetResponseJson();
-		assert(jsonoutput["success"] == JSONValue(false));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, false);
 	}
 	finally {
 		database.ClearCollection("event");
@@ -121,8 +121,8 @@ unittest {
 
 		tester.Request(&m.Perform, jsoninput.toString);
 
-		JSONValue jsonoutput = tester.GetResponseJson();
-		assert(jsonoutput["success"] == JSONValue(true));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, true);
 	}
 	finally {
 		database.ClearCollection("event");

@@ -3,6 +3,7 @@ module application.Logout;
 import std.json;
 import std.stdio;
 import vibe.http.server;
+import vibe.data.json;
 
 import boiler.ActionTester;
 import boiler.helpers;
@@ -42,8 +43,8 @@ unittest {
 	Logout logoutHandler = new Logout();
 	tester.Request(&logoutHandler.Perform);
 	
-	JSONValue json = tester.GetResponseJson();
-	assert(json["success"] == JSONValue(true));
+	Json jsonoutput = tester.GetResponseJson();
+	assertEqual(jsonoutput["success"].to!bool, true);
 	string id = tester.GetResponseSessionValue!string("id");
 	assertEqual(id, "");
 }

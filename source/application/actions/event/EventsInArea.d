@@ -5,6 +5,7 @@ import std.stdio;
 import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
+import vibe.data.json;
 
 import boiler.ActionTester;
 import boiler.helpers;
@@ -53,8 +54,8 @@ unittest {
 
 		ActionTester tester = new ActionTester(&m.Perform);
 
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(false));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, false);
 	}
 	finally {
 		database.ClearCollection("event");
@@ -85,10 +86,10 @@ unittest {
 
 		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
-		JSONValue json = tester.GetResponseJson();
-		assert(json["success"] == JSONValue(true));
-		writeln(json);
-		//assert(json["events"] == JSONValue(true));
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, true);
+		Event[] events = deserialize!(JsonSerializer, Event[])(jsonoutput["events"]);
+		assertEqual(events.length, 1);
 	}
 	finally {
 		database.ClearCollection("event");

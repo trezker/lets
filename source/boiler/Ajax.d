@@ -3,10 +3,12 @@ module boiler.Ajax;
 import std.json;
 import std.stdio;
 import vibe.http.server;
+import vibe.data.json;
 
 import boiler.ActionTester;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
+import boiler.helpers;
 
 alias ActionCreator = Action delegate();
 
@@ -58,8 +60,8 @@ unittest {
 
 	ActionTester tester = new ActionTester(&ajax.Perform);
 
-	JSONValue json = tester.GetResponseJson();
-	assert(json["success"] == JSONValue(false));
+	Json jsonoutput = tester.GetResponseJson();
+	assertEqual(jsonoutput["success"].to!bool, false);
 }
 
 //Call to method that doesn't exist should fail.
@@ -68,8 +70,8 @@ unittest {
 
 	ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"none\"}");
 
-	JSONValue json = tester.GetResponseJson();
-	assert(json["success"] == JSONValue(false));
+	Json jsonoutput = tester.GetResponseJson();
+	assertEqual(jsonoutput["success"].to!bool, false);
 }
 
 //Call to method that exists should succeed.
@@ -79,6 +81,6 @@ unittest {
 
 	ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"test\"}");
 
-	JSONValue json = tester.GetResponseJson();
-	assert(json["success"] == JSONValue(true));
+	Json jsonoutput = tester.GetResponseJson();
+	assertEqual(jsonoutput["success"].to!bool, true);
 }

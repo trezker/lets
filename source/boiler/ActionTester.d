@@ -119,9 +119,9 @@ class ActionTester {
 		} ();
 	}
 
-	public JSONValue GetResponseJson() {
+	public Json GetResponseJson() {
 		auto lines = GetResponseLines();
-		return parseJSON(lines[$-1]);
+		return parseJsonString(lines[$-1]);
 	}
 
 	public const(T) GetResponseSessionValue(T)(string key) {
