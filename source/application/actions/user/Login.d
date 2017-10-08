@@ -1,6 +1,5 @@
 module application.Login;
 
-import std.json;
 import std.stdio;
 import dauth;
 import vibe.http.server;
@@ -31,19 +30,19 @@ class Login: Action {
 			//Get user
 			auto obj = user_storage.UserByName(username);
 			if(obj == Bson(null)) {
-				JSONValue json;
+				Json json = Json.emptyObject;
 				json["success"] = false;
 				json["info"] = "Invalid login";
-				res.writeBody(json.toString, 200);
+				res.writeBody(serializeToJsonString(json), 200);
 				return res;
 			}
 
 			//Verify password
 			if(!isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string))) {
-				JSONValue json;
+				Json json = Json.emptyObject;
 				json["success"] = false;
 				json["info"] = "Invalid login password";
-				res.writeBody(json.toString, 200);
+				res.writeBody(serializeToJsonString(json), 200);
 				return res;
 			}
 
@@ -54,16 +53,15 @@ class Login: Action {
 			session.set("id", userID);
 
 			//Write result
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = true;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		catch(Exception e) {
 			//Write result
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = false;
-			res.writeBody(json.toString, 200);
-			//writeln(e);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		return res;
 	}
