@@ -1,6 +1,5 @@
 module application.EventsInArea;
 
-import std.json;
 import std.stdio;
 import dauth;
 import vibe.http.server;
@@ -37,9 +36,9 @@ class EventsInArea: Action {
 		catch(Exception e) {
 			//writeln(e);
 			//Write result
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = false;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		return res;
 	}
