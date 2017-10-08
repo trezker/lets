@@ -1,6 +1,5 @@
 module application.CreateUser;
 
-import std.json;
 import std.stdio;
 import dauth;
 import vibe.http.server;
@@ -30,10 +29,10 @@ class CreateUser: Action {
 			//Check that username is not taken
 			auto obj = user_storage.UserByName(username);
 			if(obj != Bson(null)) {
-				JSONValue json;
+				Json json = Json.emptyObject;
 				json["success"] = false;
 				json["info"] = "Username is taken";
-				res.writeBody(json.toString, 200);
+				res.writeBody(serializeToJsonString(json), 200);
 				return res;
 			}
 
@@ -41,15 +40,15 @@ class CreateUser: Action {
 			user_storage.Create(username, hashedPassword);
 
 			//Write result
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = true;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		catch(Exception e) {
 			//Write result
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = false;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		return res;
 	}
@@ -78,11 +77,11 @@ unittest {
 	
 	try {
 		CreateUser m = new CreateUser(new User_storage(database));
-		JSONValue jsoninput;
+		Json jsoninput = Json.emptyObject;
 		jsoninput["username"] = "testname";
 		jsoninput["password"] = "testpass";
 
-		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, serializeToJsonString(jsoninput));
 
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, true);
@@ -102,11 +101,11 @@ unittest {
 
 		auto user_storage = new User_storage(database);
 		CreateUser m = new CreateUser(user_storage);
-		JSONValue jsoninput;
+		Json jsoninput = Json.emptyObject;
 		jsoninput["username"] = username;
 		jsoninput["password"] = password;
 
-		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, serializeToJsonString(jsoninput));
 		
 		auto obj = user_storage.UserByName(username);
 		assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
