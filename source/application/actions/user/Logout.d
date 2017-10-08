@@ -1,6 +1,5 @@
 module application.Logout;
 
-import std.json;
 import std.stdio;
 import vibe.http.server;
 import vibe.data.json;
@@ -16,14 +15,14 @@ class Logout: Action {
 		try {
 			req.TerminateSession();
 
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = true;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		catch(Exception e) {
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = false;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		return res;
 	}
