@@ -1,6 +1,5 @@
 module boiler.Ajax;
 
-import std.json;
 import std.stdio;
 import vibe.http.server;
 import vibe.data.json;
@@ -29,16 +28,16 @@ class Ajax: Action {
 			}
 			else {
 				res = new HttpResponse;
-				JSONValue json;
+				Json json = Json.emptyObject;
 				json["success"] = false;
-				res.writeBody(json.toString, 200);
+				res.writeBody(serializeToJsonString(json), 200);
 			}
 		}
 		catch(Exception e) {
-			res = new HttpResponse;
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = false;
-			res.writeBody(json.toString, 200);
+			res = new HttpResponse;
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		return res;
 	}
@@ -47,9 +46,9 @@ class Ajax: Action {
 class SuccessTestHandler : Action {
 	public HttpResponse Perform(HttpRequest req) {
 		HttpResponse res = new HttpResponse;
-		JSONValue json;
+		Json json = Json.emptyObject;
 		json["success"] = true;
-		res.writeBody(json.toString, 200);
+		res.writeBody(serializeToJsonString(json), 200);
 		return res;
 	}
 }
