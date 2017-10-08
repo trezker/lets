@@ -35,26 +35,15 @@ ActionTester TestLogin(string name, string password) {
 	return tester;
 }
 
+Event CoordinateEvent(Location l, string t) {
+	Event event;
+	event.userId = "t";
+	event.title = t;
+	event.description = "Description";
+	event.createdTime = Clock.currTime();
+	event.startTime = Clock.currTime();
+	event.endTime = Clock.currTime();
+	event.location = l;
 
-ActionTester CreateTestEvent() {
-	CreateTestUser("testname", "testpass");
-	auto tester = TestLogin("testname", "testpass");
-
-	Database database = GetDatabase("test");
-	CreateEvent m = new CreateEvent(new Event_storage(database));
-	Event event = {
-		title: "Title",
-		description: "Description",
-		createdTime: Clock.currTime(),
-		startTime: Clock.currTime(),
-		endTime: Clock.currTime(),
-		location: {
-			latitude: 2,
-			longitude: 2
-		}
-	};
-	Json jsoninput = serialize!(JsonSerializer, Event)(event);
-
-	tester.Request(&m.Perform, jsoninput.toString);
-	return tester;
+	return event;
 }

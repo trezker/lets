@@ -69,8 +69,10 @@ unittest {
 	Database database = GetDatabase("test");
 	
 	try {
-		CreateTestEvent();
-		EventsInArea m = new EventsInArea(new Event_storage(database));
+		auto event_storage = new Event_storage(database);
+		event_storage.Create(CoordinateEvent(Location(2, 2), "Inside"));
+		event_storage.Create(CoordinateEvent(Location(5, 5), "Outside"));
+		EventsInArea m = new EventsInArea(event_storage);
 
 		EventSearch search = {
 			location: {

@@ -87,26 +87,13 @@ unittest {
 	}
 }
 
-Event CoordinateEvent(Location l, string t) {
-	Event event;
-	event.userId = "t";
-	event.title = t;
-	event.description = "Description";
-	event.createdTime = Clock.currTime();
-	event.startTime = Clock.currTime();
-	event.endTime = Clock.currTime();
-	event.location = l;
-
-	return event;
-}
-
 //Find events in area should return all events in the area
 unittest {
+	import application.testhelpers;
 	Database database = GetDatabase("test");
 	try {
 		auto event_storage = new Event_storage(database);
 		
-		Location location = {latitude: 4,longitude: 4};
 		event_storage.Create(CoordinateEvent(Location(4, 4), "Inside"));
 		event_storage.Create(CoordinateEvent(Location(2, 2), "Inside"));
 		event_storage.Create(CoordinateEvent(Location(5, 5), "Outside"));
