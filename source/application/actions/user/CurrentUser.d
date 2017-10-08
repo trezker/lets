@@ -1,6 +1,5 @@
 module application.CurrentUser;
 
-import std.json;
 import std.stdio;
 import vibe.http.server;
 import vibe.data.bson;
@@ -30,15 +29,15 @@ class CurrentUser: Action {
 				username = user["username"].get!string;
 			}
 
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = true;
 			json["username"] = username;
-			response.writeBody(json.toString, 200);
+			response.writeBody(serializeToJsonString(json), 200);
 		}
 		catch(Exception e) {
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = false;
-			response.writeBody(json.toString, 200);
+			response.writeBody(serializeToJsonString(json), 200);
 		}
 		return response;
 	}
