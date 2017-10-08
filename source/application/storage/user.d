@@ -62,7 +62,7 @@ class User_storage {
 			Bson query = Bson(["username" : Bson("name")]);
 			auto result = database.GetCollection("user").find(query);
 			Json json = parseJsonString(to!string(result));
-			assertEqual(1, json.array.length);
+			assertEqual(1, json.length);
 		}
 		finally {
 			database.ClearCollection("user");
