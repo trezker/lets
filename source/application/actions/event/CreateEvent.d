@@ -1,6 +1,5 @@
 module application.CreateEvent;
 
-import std.json;
 import std.stdio;
 import dauth;
 import vibe.http.server;
@@ -32,16 +31,15 @@ class CreateEvent: Action {
 			event_storage.Create(event);
 
 			//Write result
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = true;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		catch(Exception e) {
-			//writeln(e);
 			//Write result
-			JSONValue json;
+			Json json = Json.emptyObject;
 			json["success"] = false;
-			res.writeBody(json.toString, 200);
+			res.writeBody(serializeToJsonString(json), 200);
 		}
 		return res;
 	}
