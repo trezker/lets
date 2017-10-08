@@ -1,6 +1,5 @@
 module application.storage.user;
 
-import std.json;
 import std.conv;
 import std.stdio;
 import std.algorithm;
@@ -62,7 +61,7 @@ class User_storage {
 			
 			Bson query = Bson(["username" : Bson("name")]);
 			auto result = database.GetCollection("user").find(query);
-			JSONValue json = parseJSON(to!string(result));
+			Json json = parseJsonString(to!string(result));
 			assertEqual(1, json.array.length);
 		}
 		finally {
