@@ -1,6 +1,5 @@
 module boiler.ActionTester;
 
-import std.json;
 import std.stdio;
 import std.algorithm;
 import vibe.inet.url;

@@ -1,6 +1,5 @@
 module boiler.HttpRequest;
 
-import std.json;
 import std.conv;
 import std.stdio;
 import vibe.http.session;
@@ -71,10 +70,10 @@ unittest {
 	import std.stdio;
 	
 	auto sessionstore = new MemorySessionStore ();
-	JSONValue json;
+	Json json = Json.emptyObject;
 	json["key"] = "value";
 	auto request = new HttpRequest(sessionstore);
-	request.SetJsonFromString(json.toString);
+	request.SetJsonFromString(serializeToJsonString(json));
 
 	assertEqual(request.json["key"].to!string, "value");
 }

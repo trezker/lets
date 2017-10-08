@@ -1,6 +1,5 @@
 module application.storage.event;
 
-import std.json;
 import std.conv;
 import std.stdio;
 import std.algorithm;

@@ -2,7 +2,6 @@ module boiler.server;
 
 import std.algorithm;
 import std.file;
-import std.json;
 import std.functional;
 import std.conv;
 import std.array;
