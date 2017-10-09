@@ -26,7 +26,8 @@ class CreateEvent: Action {
 				throw new Exception("User not logged in");
 			}
 			Event event = deserialize!(JsonSerializer, Event)(request.json);
-			event.userId = request.session.get!string("id");
+			BsonObjectID userId = BsonObjectID.fromString(request.session.get!string("id"));
+			event.userId = userId;
 
 			event_storage.Create(event);
 

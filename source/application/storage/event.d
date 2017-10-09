@@ -18,7 +18,7 @@ struct Location {
 }
 
 struct Event {
-	string userId;
+	BsonObjectID userId;
 	string title;
 	string description;
 	SysTime createdTime;
@@ -30,6 +30,12 @@ struct Event {
 struct EventSearch {
 	Location location;
 	double radius;
+	SysTime fromTime;
+	SysTime toTime;
+}
+
+struct EventSearchUser {
+	BsonObjectID userId;
 	SysTime fromTime;
 	SysTime toTime;
 }
@@ -59,6 +65,11 @@ class Event_storage {
 		]);
 		return MongoArray!(Event)(collection, conditions);
 	}
+
+	Event[] ByUser(EventSearchUser search) {
+		auto conditions = Bson(["userId": Bson(search.userId)]);
+		return MongoArray!(Event)(collection, conditions);
+	}
 }
 
 //Creating a valid event should succeed
@@ -66,7 +77,7 @@ unittest {
 	Database database = GetDatabase("test");
 	try {
 		Event event = {
-			userId: "t",
+			userId: BsonObjectID.fromString("000000000000000000000000"),
 			title: "Title",
 			description: "Description",
 			createdTime: Clock.currTime(),
@@ -116,6 +127,36 @@ unittest {
 		assertEqual(2, events.length);
 		foreach(e; events) {
 			assertEqual("Inside", e.title);
+		}
+	}
+	finally {
+		database.ClearCollection("event");
+	}
+}
+
+//Find events by user should return all events created by the user
+unittest {
+	import application.testhelpers;
+	Database database = GetDatabase("test");
+	try {
+		auto event_storage = new Event_storage(database);
+		auto userId = "000000000000000000000000";
+		event_storage.Create(UserEvent(userId));
+		event_storage.Create(UserEvent(userId));
+		event_storage.Create(UserEvent("102030405060708090102030"));
+
+		EventSearchUser search = {
+			userId: BsonObjectID.fromString(userId),
+			fromTime: Clock.currTime(),
+			toTime: Clock.currTime()
+		};
+
+		auto events = event_storage.ByUser(search);
+
+		writeln(events);
+		assertEqual(2, events.length);
+		foreach(e; events) {
+			assertEqual(userId, e.userId.toString());
 		}
 	}
 	finally {

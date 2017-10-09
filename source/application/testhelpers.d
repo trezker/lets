@@ -9,6 +9,7 @@ import application.CreateEvent;
 import application.storage.event;
 import std.datetime;
 import vibe.data.json;
+import vibe.data.bson;
 
 
 void CreateTestUser(string name, string password) {
@@ -38,13 +39,26 @@ ActionTester TestLogin(string name, string password) {
 
 Event CoordinateEvent(Location l, string t) {
 	Event event;
-	event.userId = "t";
+	event.userId = BsonObjectID.fromString("000000000000000000000000");
 	event.title = t;
 	event.description = "Description";
 	event.createdTime = Clock.currTime();
 	event.startTime = Clock.currTime();
 	event.endTime = Clock.currTime();
 	event.location = l;
+
+	return event;
+}
+
+Event UserEvent(string userId) {
+	Event event;
+	event.userId = BsonObjectID.fromString(userId);
+	event.title = "title";
+	event.description = "Description";
+	event.createdTime = Clock.currTime();
+	event.startTime = Clock.currTime();
+	event.endTime = Clock.currTime();
+	event.location = Location(4, 4);
 
 	return event;
 }
