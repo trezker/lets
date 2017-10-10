@@ -18,7 +18,7 @@ struct Location {
 }
 
 struct Event {
-	BsonObjectID userId;
+	@optional BsonObjectID userId;
 	string title;
 	string description;
 	SysTime createdTime;
@@ -35,7 +35,7 @@ struct EventSearch {
 }
 
 struct EventSearchUser {
-	BsonObjectID userId;
+	@optional BsonObjectID userId;
 	SysTime fromTime;
 	SysTime toTime;
 }
@@ -153,7 +153,7 @@ unittest {
 
 		auto events = event_storage.ByUser(search);
 
-		writeln(events);
+		//writeln(events);
 		assertEqual(2, events.length);
 		foreach(e; events) {
 			assertEqual(userId, e.userId.toString());
