@@ -6,6 +6,20 @@ var EventViewModel = function() {
 	self.infowindow = null;
 	self.messagewindow = null;
 
+	self.newEvent = {
+		title: "asd",
+		description: "sdf",
+		createdTime: "",
+		startTime: "",
+		endTime: "",
+		location: {
+			latitude: 0,
+			longitude: 0
+		}
+	};
+
+	self.event = ko.mapping.fromJS(self.newEvent);
+
 	self.initMap = function () {
 		var california = {lat: 37.4419, lng: -122.1419};
 		self.map = new google.maps.Map(document.getElementById('map'), {
@@ -38,8 +52,6 @@ var EventViewModel = function() {
 			});
 		});
 
-
-
 		var input = document.getElementById('search');
 
 		var autocomplete = new google.maps.places.Autocomplete(input);
@@ -63,17 +75,12 @@ var EventViewModel = function() {
 		});
 	}
 
-	self.saveData = function () {
-		var name = escape(document.getElementById('name').value);
-		var address = escape(document.getElementById('address').value);
-		var type = document.getElementById('type').value;
-		var latlng = self.marker.getPosition();
-		var url = 'phpsqlinfo_addrow.php?name=' + name + '&address=' + address +
-		'&type=' + type + '&lat=' + latlng.lat() + '&lng=' + latlng.lng();
-
+	self.createEvent = function() {
+		var unmapped = ko.mapping.toJS(self.event);
+		console.log(unmapped);
 		self.infowindow.close();
 		self.messagewindow.open(self.map, self.marker);
-	}
+	};
 };
 
 var eventViewModel = new EventViewModel()
