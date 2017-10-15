@@ -15,4 +15,4 @@ var userViewModel = function() {
 	}
 };
 
-ko.applyBindings(new userViewModel());
+ko.applyBindings(new userViewModel(), document.getElementById('header'));
