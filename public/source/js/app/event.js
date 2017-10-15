@@ -27,10 +27,11 @@ var EventViewModel = function() {
 			zoom: 13
 		});
 
+		/*
 		self.infowindow = new google.maps.InfoWindow({
 			content: document.getElementById('form')
 		});
-
+		*/
 		self.messagewindow = new google.maps.InfoWindow({
 			content: document.getElementById('message')
 		});
@@ -48,7 +49,8 @@ var EventViewModel = function() {
 			}
 
 			google.maps.event.addListener(self.marker, 'click', function() {
-				self.infowindow.open(self.map, self.marker);
+				$('#exampleModal').modal('show');
+				//self.infowindow.open(self.map, self.marker);
 			});
 		});
 
@@ -78,7 +80,8 @@ var EventViewModel = function() {
 	self.createEvent = function() {
 		var unmapped = ko.mapping.toJS(self.event);
 		console.log(unmapped);
-		self.infowindow.close();
+		$('#exampleModal').modal('hide');
+		//self.infowindow.close();
 		self.messagewindow.open(self.map, self.marker);
 	};
 };
