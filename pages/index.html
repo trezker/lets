@@ -38,15 +38,32 @@
 									<label class="control-label">Title</label>
 									<input type='text' class="form-control" data-bind="value: event.title"/>
 								</div>
-								<div class='input-group date' id='datetimepicker3' data-bind="
-									dateTimePicker: event.startTime, 
-									dateTimePickerOptions: {format: 'YYYY-MM-DD HH:mm:ss'}
-								">
-									<input type='text' class="form-control" />
-									<span class="input-group-addon">
-										<span class="glyphicon glyphicon-time"></span>
-									</span>
-								</div>
+									<div class="row">
+										<div class="col-md-6">
+											<label class="control-label">Start</label>
+											<div class='input-group date' id='datetimepicker3' data-bind="
+												dateTimePicker: event.startTime, 
+												dateTimePickerOptions: {format: 'YYYY-MM-DD HH:mm:ss'}
+											">
+												<input type='text' class="form-control" />
+												<span class="input-group-addon">
+													<span class="glyphicon glyphicon-time"></span>
+												</span>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<label class="control-label">End</label>
+											<div class='input-group date' id='datetimepicker3' data-bind="
+												dateTimePicker: event.endTime, 
+												dateTimePickerOptions: {format: 'YYYY-MM-DD HH:mm:ss'}
+											">
+												<input type='text' class="form-control" />
+												<span class="input-group-addon">
+													<span class="glyphicon glyphicon-time"></span>
+												</span>
+											</div>
+										</div>
+									</div>
 							</form>
 						</div>
 						<div class="modal-footer">
