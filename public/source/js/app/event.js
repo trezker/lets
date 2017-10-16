@@ -80,6 +80,20 @@ var EventViewModel = function() {
 	self.createEvent = function() {
 		var unmapped = ko.mapping.toJS(self.event);
 		console.log(unmapped);
+		var data = {
+			"action": "CreateEvent",
+			"title": unmapped.title,
+			"description": unmapped.description,
+			"startTime": unmapped.startTime,
+			"endTime": unmapped.endTime,
+			"location": unmapped.location
+		};
+		ajax_post(data, function(returnedData) {
+			console.log(returnedData);
+			if(returnedData.success == true) {
+			}
+		});
+
 		$('#exampleModal').modal('hide');
 		//self.infowindow.close();
 		self.messagewindow.open(self.map, self.marker);

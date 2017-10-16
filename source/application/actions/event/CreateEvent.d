@@ -1,6 +1,7 @@
 module application.CreateEvent;
 
 import std.stdio;
+import std.datetime;
 import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
@@ -28,6 +29,7 @@ class CreateEvent: Action {
 			Event event = deserialize!(JsonSerializer, Event)(request.json);
 			BsonObjectID userId = BsonObjectID.fromString(request.session.get!string("id"));
 			event.userId = userId;
+			event.createdTime = Clock.currTime();
 
 			event_storage.Create(event);
 
@@ -38,6 +40,7 @@ class CreateEvent: Action {
 		}
 		catch(Exception e) {
 			//Write result
+			writeln(e);
 			Json json = Json.emptyObject;
 			json["success"] = false;
 			res.writeBody(serializeToJsonString(json), 200);
@@ -65,7 +68,6 @@ unittest {
 
 //Create event with all parameters but not logged in should fail
 unittest {
-	import std.datetime;
 	Database database = GetDatabase("test");
 	
 	try {
@@ -73,7 +75,6 @@ unittest {
 		Event event = {
 			title: "Title",
 			description: "Description",
-			createdTime: Clock.currTime(),
 			startTime: Clock.currTime(),
 			endTime: Clock.currTime(),
 			location: {
@@ -95,7 +96,6 @@ unittest {
 
 //Create event with all parameters and logged in should succeed
 unittest {
-	import std.datetime;
 	import application.testhelpers;
 
 	Database database = GetDatabase("test");
@@ -108,7 +108,6 @@ unittest {
 		Event event = {
 			title: "Title",
 			description: "Description",
-			createdTime: Clock.currTime(),
 			startTime: Clock.currTime(),
 			endTime: Clock.currTime(),
 			location: {
@@ -116,6 +115,7 @@ unittest {
 				longitude: 2
 			}
 		};
+		//writeln(event);
 		Json jsoninput = serialize!(JsonSerializer, Event)(event);
 
 		tester.Request(&m.Perform, jsoninput.toString);

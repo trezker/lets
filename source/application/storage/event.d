@@ -21,7 +21,7 @@ struct Event {
 	@optional BsonObjectID userId;
 	string title;
 	string description;
-	SysTime createdTime;
+	@optional SysTime createdTime;
 	SysTime startTime;
 	SysTime endTime;
 	Location location;
