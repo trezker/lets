@@ -38,7 +38,10 @@
 									<label class="control-label">Title</label>
 									<input type='text' class="form-control" data-bind="value: event.title"/>
 								</div>
-								<div class='input-group date' id='datetimepicker3'>
+								<div class='input-group date' id='datetimepicker3' data-bind="
+									dateTimePicker: event.startTime, 
+									dateTimePickerOptions: {format: 'YYYY-MM-DD HH:mm:ss'}
+								">
 									<input type='text' class="form-control" />
 									<span class="input-group-addon">
 										<span class="glyphicon glyphicon-time"></span>
@@ -60,9 +63,9 @@
 		</div>
 	</div>
 
-
 	<script type='text/javascript' src='/source/js/lib/knockout-3.4.1.js'></script>
 	<script type='text/javascript' src='/source/js/lib/knockout.mapping-latest.js'></script>
+	<script type='text/javascript' src='/source/js/lib/dateTimePicker.js'></script>
 	<script type='text/javascript' src='/source/js/lib/jquery-2.1.3.min.js'></script>
 	<script type='text/javascript' src='/source/js/lib/bootstrap.min.js'></script>
 	<script type='text/javascript' src='/source/js/lib/moment.js'></script>
@@ -70,12 +73,5 @@
 	<script type='text/javascript' src='/source/js/common.js'></script>
 	<script type='text/javascript' src='/source/js/app/userViewModel.js'></script>
 	<script type='text/javascript' src='/source/js/app/event.js'></script>
-        <script type="text/javascript">
-            $(function () {
-                $('#datetimepicker3').datetimepicker({
-                    format: 'YYYY-MM-DD HH:mm:ss'
-                });
-            });
-        </script>
 </body>
 </html>
