@@ -86,7 +86,10 @@ var EventViewModel = function() {
 			"description": unmapped.description,
 			"startTime": unmapped.startTime,
 			"endTime": unmapped.endTime,
-			"location": unmapped.location
+			"location": {
+				"latitude": self.marker.position.lat(),
+				"longitude": self.marker.position.lng()
+			}
 		};
 		ajax_post(data, function(returnedData) {
 			console.log(returnedData);
