@@ -1,4 +1,16 @@
+.maingrid {
+	display: grid;
+	grid-template-rows: 3em auto;
+	height: 100vh;
+}
+
+#eventGrid {
+	display: grid;
+	grid-template-columns: 400px auto;
+	height: 100%;
+}
+
 #map {
-	height: 500px;
+	height: 100%;
 	width: 100%;
 }
