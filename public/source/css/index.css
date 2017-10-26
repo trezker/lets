@@ -14,3 +14,8 @@
 	height: 100%;
 	width: 100%;
 }
+
+#eventList .event {
+	cursor: pointer;
+	margin: 1em;
+}

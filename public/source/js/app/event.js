@@ -6,6 +6,8 @@ var EventViewModel = function() {
 	self.infowindow = null;
 	self.messagewindow = null;
 
+	self.events = ko.observableArray([]);
+
 	self.newEvent = {
 		title: "asd",
 		description: "sdf",
@@ -75,6 +77,15 @@ var EventViewModel = function() {
 				self.map.setZoom(17);  // Why 17? Because it looks good.
 			}
 		});
+
+		var input = {
+			"action": "MyEvents"
+		};
+		ajax_post(input, function(data) {
+			if(data.success == true) {
+				self.events(data.events);
+			}
+		});
 	}
 
 	self.createEvent = function() {
@@ -100,6 +111,14 @@ var EventViewModel = function() {
 		$('#exampleModal').modal('hide');
 		//self.infowindow.close();
 		self.messagewindow.open(self.map, self.marker);
+	};
+
+	self.goToEvent = function(event) {
+		self.map.setCenter({
+			"lat": event.location.latitude, 
+			"lng": event.location.longitude
+		});
+		self.map.setZoom(17);
 	};
 };
 

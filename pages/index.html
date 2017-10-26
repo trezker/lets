@@ -24,6 +24,13 @@
 			<div id="eventGrid">
 				<div id="eventList">
 					<input id="search" class="form-control" type="text" placeholder="Enter a location">
+					<div data-bind="foreach: events">
+						<div class="event" data-bind="click: $root.goToEvent, attr: {title: description}">
+							<div class="pull-left" data-bind="text: title"></div>
+							<div class="pull-right" data-bind="text: moment(startTime).format('LL')"></div>
+							<div class="clearfix"></div>
+						</div>
+					</div>
 				</div>
 				<div>
 					<div id="map"></div>

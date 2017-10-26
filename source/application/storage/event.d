@@ -36,8 +36,8 @@ struct EventSearch {
 
 struct EventSearchUser {
 	@optional BsonObjectID userId;
-	SysTime fromTime;
-	SysTime toTime;
+	@optional SysTime fromTime;
+	@optional SysTime toTime;
 }
 
 class Event_storage {
