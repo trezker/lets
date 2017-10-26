@@ -7,6 +7,7 @@ var EventViewModel = function() {
 	self.messagewindow = null;
 
 	self.events = ko.observableArray([]);
+	self.markers = [];
 
 	self.newEvent = {
 		title: "asd",
@@ -84,6 +85,16 @@ var EventViewModel = function() {
 		ajax_post(input, function(data) {
 			if(data.success == true) {
 				self.events(data.events);
+				for(n in self.events()) {
+					self.markers.push(new google.maps.Marker({
+						position: {
+							"lat": self.events()[n].location.latitude, 
+							"lng": self.events()[n].location.longitude
+						},
+						map: self.map,
+						draggable: true
+					}));
+				}
 			}
 		});
 	}
