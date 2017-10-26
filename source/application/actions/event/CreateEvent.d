@@ -104,7 +104,7 @@ unittest {
 	}
 }
 
-/*
+
 //Create event with all parameters and logged in should succeed
 unittest {
 	import application.testhelpers;
@@ -139,4 +139,3 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
-*/
