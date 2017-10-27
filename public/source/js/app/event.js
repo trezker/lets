@@ -86,14 +86,21 @@ var EventViewModel = function() {
 			if(data.success == true) {
 				self.events(data.events);
 				for(n in self.events()) {
-					self.markers.push(new google.maps.Marker({
+					var marker = new google.maps.Marker({
 						position: {
 							"lat": self.events()[n].location.latitude, 
 							"lng": self.events()[n].location.longitude
 						},
 						map: self.map,
-						draggable: true
-					}));
+						draggable: true,
+						event: self.events()[n]
+					});
+					self.markers.push(marker);
+					google.maps.event.addListener(marker, 'click', function() {
+						console.log(this.event);
+						ko.mapping.fromJS(this.event, self.event);
+						$('#exampleModal').modal('show');
+					});
 				}
 			}
 		});
