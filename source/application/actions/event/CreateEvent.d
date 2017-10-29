@@ -25,10 +25,7 @@ class CreateEvent: Action {
 		try {
 			if(!request.session) {
 				throw new Exception("User not logged in");
-			}/*
-			if(!request.json) {
-				throw new Exception("Missing parameters");
-			}*/
+			}
 			Event event = deserialize!(JsonSerializer, Event)(request.json);
 			
 			BsonObjectID userId = BsonObjectID.fromString(request.session.get!string("id"));
