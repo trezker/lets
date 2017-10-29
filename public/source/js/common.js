@@ -8,15 +8,14 @@ function ajax_post(data) {
 	})
 }
 
-function ajax_html(url, done) {
-	$.ajax({
+function ajax_html(url) {
+	return $.ajax({
 		cache		: false,
 		method		: "GET",
 		dataType	: 'html',
 		contentType	: 'application/json; charset=UTF-8',
 		url			: url
 	})
-	.done(done);
 }
 
 function ajax_text(url) {
