@@ -79,6 +79,10 @@ var EventViewModel = function() {
 			}
 		});
 
+		self.loadMyEvents();
+	}
+
+	self.loadMyEvents = function() {
 		var input = {
 			"action": "MyEvents"
 		};
@@ -123,6 +127,7 @@ var EventViewModel = function() {
 		ajax_post(data, function(returnedData) {
 			console.log(returnedData);
 			if(returnedData.success == true) {
+				self.loadMyEvents();
 			}
 		});
 
