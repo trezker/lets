@@ -25,10 +25,10 @@ class CreateEvent: Action {
 		try {
 			if(!request.session) {
 				throw new Exception("User not logged in");
-			}
+			}/*
 			if(!request.json) {
 				throw new Exception("Missing parameters");
-			}
+			}*/
 			Event event = deserialize!(JsonSerializer, Event)(request.json);
 			
 			BsonObjectID userId = BsonObjectID.fromString(request.session.get!string("id"));
@@ -94,7 +94,7 @@ unittest {
 		Json jsoninput = serialize!(JsonSerializer, Event)(event);
 
 		CreateEvent m = new CreateEvent(new Event_storage(database));
-		ActionTester tester = new ActionTester(&m.Perform jsoninput.toString);
+		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
@@ -103,7 +103,6 @@ unittest {
 		database.ClearCollection("event");
 	}
 }
-
 
 //Create event with all parameters and logged in should succeed
 unittest {
@@ -121,6 +120,7 @@ unittest {
 			description: "Description",
 			startTime: Clock.currTime(),
 			endTime: Clock.currTime(),
+			createdTime: Clock.currTime(),
 			location: {
 				latitude: 1,
 				longitude: 2
