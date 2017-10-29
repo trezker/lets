@@ -86,7 +86,7 @@ var EventViewModel = function() {
 		var input = {
 			"action": "MyEvents"
 		};
-		ajax_post(input, function(data) {
+		ajax_post(input).done(function(data) {
 			if(data.success == true) {
 				self.events(data.events);
 				for(n in self.events()) {
@@ -124,7 +124,7 @@ var EventViewModel = function() {
 				"longitude": self.marker.position.lng()
 			}
 		};
-		ajax_post(data, function(returnedData) {
+		ajax_post(data).done(function(returnedData) {
 			console.log(returnedData);
 			if(returnedData.success == true) {
 				self.loadMyEvents();
