@@ -23,16 +23,13 @@ ko.bindingHandlers.dateTimePicker = {
             }
         });
     },
-    update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
 
+    update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
         var picker = $(element).data("DateTimePicker");
         //when the view model is updated, update the widget
         if (picker) {
             var koDate = ko.utils.unwrapObservable(valueAccessor());
-
-            //in case return from server datetime i am get in this form for example /Date(93989393)/ then fomat this
-            koDate = (typeof (koDate) !== 'object') ? new Date(parseFloat(koDate.replace(/[^0-9]/g, ''))) : koDate;
-
+            koDate = (typeof (koDate) !== 'object') ? new Date(koDate) : koDate;
             picker.date(koDate);
         }
     }

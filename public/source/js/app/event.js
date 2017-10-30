@@ -100,6 +100,7 @@ var EventViewModel = function() {
 					});
 					self.markers.push(marker);
 					google.maps.event.addListener(marker, 'click', function() {
+						console.log(this.event);
 						ko.mapping.fromJS(this.event, self.event);
 						$('#exampleModal').modal('show');
 					});
