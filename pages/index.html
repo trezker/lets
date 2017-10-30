@@ -84,8 +84,10 @@
 							</form>
 						</div>
 						<div class="modal-footer">
+							<button data-bind="click: deleteEvent, visible: isEditing()" class="btn btn-warning pull-left">Delete</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button data-bind="click: createEvent" class="btn btn-primary">Create Event</button>
+							<button data-bind="click: createEvent, visible: !isEditing()" class="btn btn-primary">Create</button>
+							<button data-bind="click: updateEvent, visible: isEditing()" class="btn btn-primary">Save</button>
 						</div>
 					</div>
 				</div>

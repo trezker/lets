@@ -10,6 +10,7 @@ var EventViewModel = function() {
 	self.markers = [];
 
 	self.newEvent = {
+		userId: "",
 		title: "asd",
 		description: "sdf",
 		createdTime: "",
@@ -23,6 +24,10 @@ var EventViewModel = function() {
 
 	self.event = ko.mapping.fromJS(self.newEvent);
 
+	self.isEditing = ko.computed(function() {
+		return self.event.userId().length > 0;
+	}, self);
+
 	self.initMap = function () {
 		var california = {lat: 37.4419, lng: -122.1419};
 		self.map = new google.maps.Map(document.getElementById('map'), {
@@ -30,11 +35,6 @@ var EventViewModel = function() {
 			zoom: 13
 		});
 
-		/*
-		self.infowindow = new google.maps.InfoWindow({
-			content: document.getElementById('form')
-		});
-		*/
 		self.messagewindow = new google.maps.InfoWindow({
 			content: document.getElementById('message')
 		});
@@ -53,7 +53,6 @@ var EventViewModel = function() {
 
 			google.maps.event.addListener(self.marker, 'click', function() {
 				$('#exampleModal').modal('show');
-				//self.infowindow.open(self.map, self.marker);
 			});
 		});
 
@@ -101,7 +100,6 @@ var EventViewModel = function() {
 					});
 					self.markers.push(marker);
 					google.maps.event.addListener(marker, 'click', function() {
-						console.log(this.event);
 						ko.mapping.fromJS(this.event, self.event);
 						$('#exampleModal').modal('show');
 					});
@@ -134,6 +132,14 @@ var EventViewModel = function() {
 		$('#exampleModal').modal('hide');
 		//self.infowindow.close();
 		self.messagewindow.open(self.map, self.marker);
+	};
+
+	self.updateEvent = function() {
+
+	};
+
+	self.deleteEvent = function() {
+		
 	};
 
 	self.goToEvent = function(event) {
