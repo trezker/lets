@@ -26,7 +26,7 @@ class CreateEvent: Action {
 			if(!request.session) {
 				throw new Exception("User not logged in");
 			}
-			Event event = deserialize!(JsonSerializer, Event)(request.json);
+			NewEvent event = deserialize!(JsonSerializer, NewEvent)(request.json);
 			
 			BsonObjectID userId = BsonObjectID.fromString(request.session.get!string("id"));
 			event.userId = userId;
@@ -77,7 +77,7 @@ unittest {
 	Database database = GetDatabase("test");
 	
 	try {
-		Event event = {
+		NewEvent event = {
 			title: "Title",
 			description: "Description",
 			startTime: Clock.currTime(),
@@ -88,11 +88,9 @@ unittest {
 				longitude: 2
 			}
 		};
-		Json jsoninput = serialize!(JsonSerializer, Event)(event);
-
+		Json jsoninput = serialize!(JsonSerializer, NewEvent)(event);
 		CreateEvent m = new CreateEvent(new Event_storage(database));
 		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
-
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
 	}
@@ -112,7 +110,7 @@ unittest {
 		auto tester = TestLogin("testname", "testpass");
 
 		CreateEvent m = new CreateEvent(new Event_storage(database));
-		Event event = {
+		NewEvent event = {
 			title: "Title",
 			description: "Description",
 			startTime: Clock.currTime(),
@@ -124,7 +122,7 @@ unittest {
 			}
 		};
 		//writeln(event);
-		Json jsoninput = serialize!(JsonSerializer, Event)(event);
+		Json jsoninput = serialize!(JsonSerializer, NewEvent)(event);
 
 		tester.Request(&m.Perform, jsoninput.toString);
 

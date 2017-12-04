@@ -17,7 +17,18 @@ struct Location {
 	double longitude;
 }
 
+struct NewEvent {
+	@optional BsonObjectID userId;
+	string title;
+	string description;
+	@optional SysTime createdTime;
+	SysTime startTime;
+	SysTime endTime;
+	Location location;
+}
+
 struct Event {
+	BsonObjectID _id;
 	@optional BsonObjectID userId;
 	string title;
 	string description;
@@ -48,8 +59,19 @@ class Event_storage {
 		collection = database.GetCollection("event");
 	}
 
-	void Create(Event event) {
+	void Create(NewEvent event) {
 		collection.insert(event);
+	}
+
+	void Update(Event event) {
+		auto selector = Bson(["_id": Bson(event._id)]);
+		auto update = Bson([
+			"$set": Bson([
+				"title": Bson(event.title),
+				"description": Bson(event.description)
+			])
+		]);
+		collection.update(selector, update);
 	}
 
 	Event[] FindInArea(EventSearch eventSearch) {
@@ -76,7 +98,7 @@ class Event_storage {
 unittest {
 	Database database = GetDatabase("test");
 	try {
-		Event event = {
+		NewEvent event = {
 			userId: BsonObjectID.fromString("000000000000000000000000"),
 			title: "Title",
 			description: "Description",
@@ -97,6 +119,53 @@ unittest {
 	}
 }
 
+//Update event should succeed
+unittest {
+	import application.testhelpers;
+	Database database = GetDatabase("test");
+	try {
+		auto event_storage = new Event_storage(database);
+
+		event_storage.Create(CoordinateEvent(Location(4, 4), "Inside"));
+
+		//Find and update the event.
+		EventSearch search = {
+			location: {
+				latitude: 3,
+				longitude: 3
+			},
+			radius: 1,
+			fromTime: Clock.currTime(),
+			toTime: Clock.currTime()
+		};
+
+		auto events = event_storage.FindInArea(search);
+		assertEqual(1, events.length);
+		events[0].title = "New title";
+		events[0].description = "New description";
+		event_storage.Update(events[0]);
+
+		//Reload the search
+		EventSearch search2 = {
+			location: {
+				latitude: 3,
+				longitude: 3
+			},
+			radius: 1,
+			fromTime: Clock.currTime(),
+			toTime: Clock.currTime()
+		};
+
+		events = event_storage.FindInArea(search2);
+		assertEqual(1, events.length);
+		assertEqual("New title", events[0].title);
+		assertEqual("New description", events[0].description);
+	}
+	finally {
+		database.ClearCollection("event");
+	}
+}
+
 //Find events in area should return all events in the area
 unittest {
 	import application.testhelpers;
@@ -111,6 +180,11 @@ unittest {
 		event_storage.Create(CoordinateEvent(Location(5, 1), "Outside"));
 		event_storage.Create(CoordinateEvent(Location(1, 5), "Outside"));
 
+		auto collection = database.GetCollection("event");
+		auto conditions = Bson([
+			"title": Bson("Outside")
+		]);
+
 		EventSearch search = {
 			location: {
 				latitude: 3,
@@ -123,7 +197,6 @@ unittest {
 
 		auto events = event_storage.FindInArea(search);
 
-		//writeln(events);
 		assertEqual(2, events.length);
 		foreach(e; events) {
 			assertEqual("Inside", e.title);

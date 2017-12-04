@@ -37,8 +37,8 @@ ActionTester TestLogin(string name, string password) {
 	return new ActionTester(&login.Perform, serializeToJsonString(jsoninput));
 }
 
-Event CoordinateEvent(Location l, string t) {
-	Event event;
+NewEvent CoordinateEvent(Location l, string t) {
+	NewEvent event;
 	event.userId = BsonObjectID.fromString("000000000000000000000000");
 	event.title = t;
 	event.description = "Description";
@@ -50,8 +50,8 @@ Event CoordinateEvent(Location l, string t) {
 	return event;
 }
 
-Event UserEvent(string userId) {
-	Event event;
+NewEvent UserEvent(string userId) {
+	NewEvent event;
 	event.userId = BsonObjectID.fromString(userId);
 	event.title = "title";
 	event.description = "Description";
