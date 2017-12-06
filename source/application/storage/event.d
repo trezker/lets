@@ -92,6 +92,14 @@ class Event_storage {
 		auto conditions = Bson(["userId": Bson(search.userId)]);
 		return MongoArray!(Event)(collection, conditions);
 	}
+
+	void Delete(BsonObjectID userId, BsonObjectID eventId) {
+		auto condition = Bson(["_id": Bson(eventId)]);
+		auto obj = collection.findOne(condition);
+		if(userId == obj["userId"].get!BsonObjectID) {
+			collection.remove(Bson(["_id": Bson(eventId)]));
+		}
+	}
 }
 
 //Creating a valid event should succeed
@@ -231,6 +239,38 @@ unittest {
 		foreach(e; events) {
 			assertEqual(userId, e.userId.toString());
 		}
+	}
+	finally {
+		database.ClearCollection("event");
+	}
+}
+
+//Find events by user should return all events created by the user
+unittest {
+	import application.testhelpers;
+	Database database = GetDatabase("test");
+	try {
+		auto event_storage = new Event_storage(database);
+		auto userIdString = "000000000000000000000000";
+		event_storage.Create(UserEvent(userIdString));
+		event_storage.Create(UserEvent(userIdString));
+		auto userId = BsonObjectID.fromString(userIdString);
+
+		EventSearchUser search = {
+			userId: userId,
+			fromTime: Clock.currTime(),
+			toTime: Clock.currTime()
+		};
+
+		auto events = event_storage.ByUser(search);
+
+		assertEqual(2, events.length);
+
+		event_storage.Delete(userId, events[0]._id);
+		auto eventsAfterDelete = event_storage.ByUser(search);
+
+		//writeln(events);
+		assertEqual(1, eventsAfterDelete.length);
 	}
 	finally {
 		database.ClearCollection("event");
