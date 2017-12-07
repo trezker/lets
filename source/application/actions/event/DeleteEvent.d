@@ -47,7 +47,7 @@ class DeleteEvent: Action {
 		return res;
 	}
 }
-/*
+
 //Create event without parameters should fail.
 unittest {
 	import application.testhelpers;
@@ -55,11 +55,8 @@ unittest {
 	Database database = GetDatabase("test");
 	
 	try {
-		CreateTestUser("testname", "testpass");
-		auto tester = TestLogin("testname", "testpass");
-		CreateEvent m = new CreateEvent(new Event_storage(database));
-
-		tester.Request(&m.Perform);
+		DeleteEvent m = new DeleteEvent(new Event_storage(database));
+		ActionTester tester = new ActionTester(&m.Perform);
 
 		Json json = tester.GetResponseJson();
 		assertEqual(json["success"].to!bool, false);
@@ -69,7 +66,7 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
-
+/*
 //Create event with all parameters but not logged in should fail
 unittest {
 	Database database = GetDatabase("test");
