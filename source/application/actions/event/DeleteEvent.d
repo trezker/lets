@@ -82,8 +82,8 @@ unittest {
 		database.ClearCollection("event");
 	}
 }
-/*
-//Create event with all parameters and logged in should succeed
+
+//Delete event with all parameters and logged in should succeed and the event should not exist after
 unittest {
 	import application.testhelpers;
 
@@ -92,30 +92,33 @@ unittest {
 	try {
 		CreateTestUser("testname", "testpass");
 		auto tester = TestLogin("testname", "testpass");
+		string userIdString = tester.GetResponseSessionValue!string("id");
+		auto userId = BsonObjectID.fromString(userIdString);
 
-		CreateEvent m = new CreateEvent(new Event_storage(database));
-		NewEvent event = {
-			title: "Title",
-			description: "Description",
-			startTime: Clock.currTime(),
-			endTime: Clock.currTime(),
-			createdTime: Clock.currTime(),
-			location: {
-				latitude: 1,
-				longitude: 2
-			}
+		//Create an event for the user and get its id.
+		auto event_storage = new Event_storage(database);
+		event_storage.Create(UserEvent(userIdString));
+		EventSearchUser search = {
+			userId: userId,
+			fromTime: Clock.currTime(),
+			toTime: Clock.currTime()
 		};
-		//writeln(event);
-		Json jsoninput = serialize!(JsonSerializer, NewEvent)(event);
+		auto events = event_storage.ByUser(search);
 
+		Json jsoninput = Json(["eventId": Json(events[0]._id.toString())]);
+		DeleteEvent m = new DeleteEvent(new Event_storage(database));
 		tester.Request(&m.Perform, jsoninput.toString);
 
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, true);
+
+		auto eventsAfterDelete = event_storage.ByUser(search);
+
+		//writeln(events);
+		assertEqual(0, eventsAfterDelete.length);
 	}
 	finally {
 		database.ClearCollection("event");
 		database.ClearCollection("user");
 	}
 }
-*/
