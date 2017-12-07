@@ -48,7 +48,7 @@ class DeleteEvent: Action {
 	}
 }
 
-//Create event without parameters should fail.
+//Delete event without parameters should fail.
 unittest {
 	import application.testhelpers;
 
@@ -66,25 +66,14 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
-/*
-//Create event with all parameters but not logged in should fail
+
+//Delete event with all parameters but not logged in should fail
 unittest {
 	Database database = GetDatabase("test");
 	
 	try {
-		NewEvent event = {
-			title: "Title",
-			description: "Description",
-			startTime: Clock.currTime(),
-			endTime: Clock.currTime(),
-			createdTime: Clock.currTime(),
-			location: {
-				latitude: 1,
-				longitude: 2
-			}
-		};
-		Json jsoninput = serialize!(JsonSerializer, NewEvent)(event);
-		CreateEvent m = new CreateEvent(new Event_storage(database));
+		Json jsoninput = Json(["eventId": Json("000000000000000000000000")]);
+		DeleteEvent m = new DeleteEvent(new Event_storage(database));
 		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
@@ -93,7 +82,7 @@ unittest {
 		database.ClearCollection("event");
 	}
 }
-
+/*
 //Create event with all parameters and logged in should succeed
 unittest {
 	import application.testhelpers;
