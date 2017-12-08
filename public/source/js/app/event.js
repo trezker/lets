@@ -82,6 +82,11 @@ var EventViewModel = function() {
 	}
 
 	self.loadMyEvents = function() {
+		for (var i = 0; i < self.markers.length; i++) {
+			self.markers[i].setMap(null);
+		}
+		self.markers = [];
+
 		var input = {
 			"action": "MyEvents"
 		};
@@ -132,6 +137,7 @@ var EventViewModel = function() {
 
 		$('#exampleModal').modal('hide');
 		//self.infowindow.close();
+		self.message("Saved");
 		self.messagewindow.open(self.map, self.marker);
 	};
 
@@ -140,7 +146,20 @@ var EventViewModel = function() {
 	};
 
 	self.deleteEvent = function() {
+		var unmapped = ko.mapping.toJS(self.event);
+		console.log(unmapped);
+		var data = {
+			"action": "DeleteEvent",
+			"eventId": self.event._id()
+		};
 		
+		ajax_post(data).done(function(returnedData) {
+			console.log(returnedData);
+			if(returnedData.success == true) {
+				$('#exampleModal').modal('hide');
+				self.loadMyEvents();
+			}
+		});
 	};
 
 	self.goToEvent = function(event) {
