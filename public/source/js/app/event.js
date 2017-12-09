@@ -11,11 +11,11 @@ var EventViewModel = function() {
 
 	self.newEvent = {
 		userId: "",
-		title: "asd",
-		description: "sdf",
+		title: "",
+		description: "",
 		createdTime: "",
-		startTime: "",
-		endTime: "",
+		startTime: new Date(),
+		endTime: new Date(),
 		location: {
 			latitude: 0,
 			longitude: 0
@@ -38,7 +38,14 @@ var EventViewModel = function() {
 		self.messagewindow = new google.maps.InfoWindow({
 			content: document.getElementById('message')
 		});
-
+		
+		$('#exampleModal').on('hidden.bs.modal', function () {
+			if(!self.isEditing()) {
+				self.marker.setMap(null);
+				self.marker = null;
+			}
+		});
+		
 		google.maps.event.addListener(self.map, 'click', function(event) {
 			if(self.marker) {
 				self.marker.setPosition(event.latLng);
@@ -49,11 +56,11 @@ var EventViewModel = function() {
 					map: self.map,
 					draggable: true
 				});
+				google.maps.event.addListener(self.marker, 'click', function() {
+					ko.mapping.fromJS(self.newEvent, self.event);
+					$('#exampleModal').modal('show');
+				});
 			}
-
-			google.maps.event.addListener(self.marker, 'click', function() {
-				$('#exampleModal').modal('show');
-			});
 		});
 
 		var input = document.getElementById('search');
@@ -74,7 +81,7 @@ var EventViewModel = function() {
 				self.map.fitBounds(place.geometry.viewport);
 			} else {
 				self.map.setCenter(place.geometry.location);
-				self.map.setZoom(17);  // Why 17? Because it looks good.
+				self.map.setZoom(13);
 			}
 		});
 
@@ -105,7 +112,6 @@ var EventViewModel = function() {
 					});
 					self.markers.push(marker);
 					google.maps.event.addListener(marker, 'click', function() {
-						console.log(this.event);
 						ko.mapping.fromJS(this.event, self.event);
 						$('#exampleModal').modal('show');
 					});
@@ -116,7 +122,6 @@ var EventViewModel = function() {
 
 	self.createEvent = function() {
 		var unmapped = ko.mapping.toJS(self.event);
-		console.log(unmapped);
 		var data = {
 			"action": "CreateEvent",
 			"title": unmapped.title,
@@ -129,7 +134,6 @@ var EventViewModel = function() {
 			}
 		};
 		ajax_post(data).done(function(returnedData) {
-			console.log(returnedData);
 			if(returnedData.success == true) {
 				self.loadMyEvents();
 			}
@@ -137,7 +141,7 @@ var EventViewModel = function() {
 
 		$('#exampleModal').modal('hide');
 		//self.infowindow.close();
-		self.message("Saved");
+		//self.message("Saved");
 		self.messagewindow.open(self.map, self.marker);
 	};
 
@@ -147,14 +151,12 @@ var EventViewModel = function() {
 
 	self.deleteEvent = function() {
 		var unmapped = ko.mapping.toJS(self.event);
-		console.log(unmapped);
 		var data = {
 			"action": "DeleteEvent",
 			"eventId": self.event._id()
 		};
 		
 		ajax_post(data).done(function(returnedData) {
-			console.log(returnedData);
 			if(returnedData.success == true) {
 				$('#exampleModal').modal('hide');
 				self.loadMyEvents();
