@@ -16,6 +16,7 @@ import application.CurrentUser;
 
 import application.storage.event;
 import application.CreateEvent;
+import application.UpdateEvent;
 import application.DeleteEvent;
 import application.EventsInArea;
 import application.MyEvents;
@@ -32,6 +33,7 @@ class Application {
 
 		auto eventStorage = new Event_storage(database);
 		ajax.SetActionCreator("CreateEvent", () => new CreateEvent(eventStorage));
+		ajax.SetActionCreator("UpdateEvent", () => new UpdateEvent(eventStorage));
 		ajax.SetActionCreator("DeleteEvent", () => new DeleteEvent(eventStorage));
 		ajax.SetActionCreator("EventsInArea", () => new EventsInArea(eventStorage));
 		ajax.SetActionCreator("MyEvents", () => new MyEvents(eventStorage));
