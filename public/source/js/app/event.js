@@ -102,6 +102,7 @@ var EventViewModel = function() {
 				self.events(data.events);
 				for(n in self.events()) {
 					var marker = new google.maps.Marker({
+						label: self.events()[n].title,
 						position: {
 							"lat": self.events()[n].location.latitude, 
 							"lng": self.events()[n].location.longitude
@@ -146,7 +147,30 @@ var EventViewModel = function() {
 	};
 
 	self.updateEvent = function() {
+		var unmapped = ko.mapping.toJS(self.event);
+		var marker = self.markers.find(function(m) { return m.event._id == unmapped._id; });
+		var data = {
+			"action": "UpdateEvent",
+			"_id": unmapped._id,
+			"title": unmapped.title,
+			"description": unmapped.description,
+			"startTime": unmapped.startTime,
+			"endTime": unmapped.endTime,
+			"location": {
+				"latitude": marker.position.lat(),
+				"longitude": marker.position.lng()
+			}
+		};
+		ajax_post(data).done(function(returnedData) {
+			if(returnedData.success == true) {
+				self.loadMyEvents();
+			}
+		});
 
+		$('#exampleModal').modal('hide');
+		//self.infowindow.close();
+		//self.message("Saved");
+		self.messagewindow.open(self.map, self.marker);
 	};
 
 	self.deleteEvent = function() {
