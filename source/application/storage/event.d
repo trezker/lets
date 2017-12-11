@@ -142,8 +142,7 @@ unittest {
 		assertEqual(1, events.length);
 		assertEqual("Title", events[0].title);
 		assertEqual("Description", events[0].description);
-		//TODO: Time does save and load correctly but does not compare right...
-		//assertEqual(time, events[0].createdTime);
+		assertEqual(BsonDate(time), BsonDate(events[0].createdTime));
 	}
 	finally {
 		database.ClearCollection("event");
@@ -200,9 +199,8 @@ unittest {
 		assertEqual(1, events.length);
 		assertEqual("New title", events[0].title);
 		assertEqual("New description", events[0].description);
-		//TODO: Time does save and load correctly but does not compare right...
-		//assertEqual(newTime, events[0].startTime);
-		//assertEqual(newTime, events[0].endTime);
+		assertEqual(BsonDate(newTime), BsonDate(events[0].startTime));
+		assertEqual(BsonDate(newTime), BsonDate(events[0].endTime));
 		assertEqual(newLocation, events[0].location);
 	}
 	finally {
