@@ -68,7 +68,11 @@ class Event_storage {
 		auto update = Bson([
 			"$set": Bson([
 				"title": Bson(event.title),
-				"description": Bson(event.description)
+				"description": Bson(event.description),
+				"startTime": Bson(BsonDate(event.startTime)),
+				"endTime": Bson(BsonDate(event.endTime)),
+				"location.longitude": Bson(event.location.longitude),
+				"location.latitude": Bson(event.location.latitude)
 			])
 		]);
 		collection.update(selector, update);
@@ -147,10 +151,19 @@ unittest {
 			toTime: Clock.currTime()
 		};
 
+		auto newTime = Clock.currTime();
+		Location newLocation = {
+				latitude: 2,
+				longitude: 3
+		};
+
 		auto events = event_storage.FindInArea(search);
 		assertEqual(1, events.length);
 		events[0].title = "New title";
 		events[0].description = "New description";
+		events[0].startTime = newTime;
+		events[0].endTime = newTime;
+		events[0].location = newLocation;
 		event_storage.Update(events[0]);
 
 		//Reload the search
@@ -168,6 +181,9 @@ unittest {
 		assertEqual(1, events.length);
 		assertEqual("New title", events[0].title);
 		assertEqual("New description", events[0].description);
+		//assertEqual(newTime, events[0].startTime);
+		//assertEqual(newTime, events[0].endTime);
+		assertEqual(newLocation, events[0].location);
 	}
 	finally {
 		database.ClearCollection("event");
