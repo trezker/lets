@@ -51,13 +51,15 @@ NewEvent CoordinateEvent(Location l, string t) {
 }
 
 NewEvent UserEvent(string userId) {
+	auto time = Clock.currTime();
+	time.roll!"days"(1);
 	NewEvent event;
 	event.userId = BsonObjectID.fromString(userId);
 	event.title = "title";
 	event.description = "Description";
 	event.createdTime = Clock.currTime();
-	event.startTime = Clock.currTime();
-	event.endTime = Clock.currTime();
+	event.startTime = time;
+	event.endTime = time;
 	event.location = Location(4, 4);
 
 	return event;

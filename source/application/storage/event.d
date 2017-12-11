@@ -93,7 +93,12 @@ class Event_storage {
 	}
 
 	Event[] ByUser(EventSearchUser search) {
-		auto conditions = Bson(["userId": Bson(search.userId)]);
+		auto conditions = Bson([
+			"userId": Bson(search.userId),
+			"endTime": Bson([
+				"$gte": Bson(BsonDate(Clock.currTime()))
+			])
+		]);
 		return MongoArray!(Event)(collection, conditions);
 	}
 
