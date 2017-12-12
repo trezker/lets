@@ -1,6 +1,7 @@
 module application.MyEvents;
 
 import std.stdio;
+import std.datetime;
 import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
@@ -29,7 +30,7 @@ class MyEvents: Action {
 			EventSearchUser search = deserialize!(JsonSerializer, EventSearchUser)(request.json);
 			BsonObjectID userId = BsonObjectID.fromString(request.session.get!string("id"));
 			search.userId = userId;
-
+	
 			Event[] events = event_storage.ByUser(search);
 
 			//Write result
