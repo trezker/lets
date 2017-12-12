@@ -37,61 +37,10 @@ class User_storage {
 		}
 	}
 
-	/// create user
-	unittest {
-		Database database = GetDatabase("test");
-
-		try {
-			User_storage us = new User_storage(database);
-			assertNotThrown(us.Create("name", "pass"));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
-	}
-
-	/// unique username
-	unittest {
-		Database database = GetDatabase("test");
-
-		try {
-			User_storage us = new User_storage(database);
-			
-			assertNotThrown(us.Create("name", "pass"));
-			assertNotThrown(us.Create("name", "pass"));
-			
-			Bson query = Bson(["username" : Bson("name")]);
-			auto result = database.GetCollection("user").find(query);
-			Json json = parseJsonString(to!string(result));
-			assertEqual(1, json.length);
-		}
-		finally {
-			database.ClearCollection("user");
-		}
-	}
-
 	Bson UserByName(string username) {
 		auto condition = Bson(["username": Bson(username)]);
 		auto obj = collection.findOne(condition);
 		return obj;
-	}
-
-	/// find user
-	unittest {
-		Database database = GetDatabase("test");
-
-		try {
-			User_storage us = new User_storage(database);
-			auto username = "name"; 
-			us.Create("wrong", "");
-			us.Create(username, "");
-			auto obj = us.UserByName(username);
-
-			assertEqual(obj["username"].get!string, username);
-		}
-		finally {
-			database.ClearCollection("user");
-		}
 	}
 
 	Bson UserById(string id) {
@@ -110,8 +59,11 @@ class UserTest : TestSuite {
 	this() {
 		database = GetDatabase("test");
 		user_storage = new User_storage(database);
-
+		
+		AddTest(&Create_user);
+		AddTest(&Unique_username);
 		AddTest(&User_not_found);
+		AddTest(&Find_user);
 		AddTest(&Find_user_id);
 		AddTest(&Hashing);
 	}
@@ -123,10 +75,37 @@ class UserTest : TestSuite {
 		database.ClearCollection("user");
 	}
 
+	void Create_user() {
+		User_storage us = new User_storage(database);
+		assertNotThrown(us.Create("name", "pass"));
+	}
+
+	void Unique_username() {
+		User_storage us = new User_storage(database);
+		
+		assertNotThrown(us.Create("name", "pass"));
+		assertNotThrown(us.Create("name", "pass"));
+		
+		Bson query = Bson(["username" : Bson("name")]);
+		auto result = database.GetCollection("user").find(query);
+		Json json = parseJsonString(to!string(result));
+		assertEqual(1, json.length);
+	}
+
 	void User_not_found() {
 		auto username = "name"; 
 		auto obj = user_storage.UserByName(username);
 		assertEqual(obj, Bson(null));
+	}
+
+	void Find_user() {
+		User_storage us = new User_storage(database);
+		auto username = "name"; 
+		us.Create("wrong", "");
+		us.Create(username, "");
+		auto obj = us.UserByName(username);
+
+		assertEqual(obj["username"].get!string, username);
 	}
 
 	void Find_user_id() {
