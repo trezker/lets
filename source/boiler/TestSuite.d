@@ -9,9 +9,13 @@ class TestSuite {
 
 	void Run() {
 		foreach (test; tests) {
-			Setup();
-			test();
-			Teardown();
+			try {
+				Setup();
+				test();
+			}
+			finally {
+				Teardown();
+			}
 		}
 	}
 

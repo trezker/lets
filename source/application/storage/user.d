@@ -94,21 +94,6 @@ class User_storage {
 		}
 	}
 
-	/// user not found
-	unittest {
-		Database database = GetDatabase("test");
-
-		try {
-			User_storage us = new User_storage(database);
-			auto username = "name"; 
-			auto obj = us.UserByName(username);
-			assertEqual(obj, Bson(null));
-		}
-		finally {
-			database.ClearCollection("user");
-		}
-	}
-
 	Bson UserById(string id) {
 		BsonObjectID oid = BsonObjectID.fromString(id);
 		auto conditions = Bson(["_id": Bson(oid)]);
@@ -116,56 +101,54 @@ class User_storage {
 		return obj;
 	}
 
-	/// find user id
-	unittest {
-		Database database = GetDatabase("test");
+}
 
-		try {
-			User_storage us = new User_storage(database);
-			auto username = "name"; 
-			us.Create("wrong", "");
-			us.Create(username, "");
-			auto obj = us.UserByName(username);
-			//Testing how to pass around id as string and then using it against mongo.
-			BsonObjectID oid = obj["_id"].get!BsonObjectID;
-			string sid = oid.toString();
-			auto objid = us.UserById(sid);
+class UserTest : TestSuite {
+	Database database;
+	User_storage user_storage;
 
-			assertEqual(objid["username"].get!string, username);
-		}
-		finally {
-			database.ClearCollection("user");
-		}
+	this() {
+		database = GetDatabase("test");
+		user_storage = new User_storage(database);
+
+		AddTest(&User_not_found);
+		AddTest(&Find_user_id);
+		AddTest(&Hashing);
 	}
 
-	unittest {
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("user");
+	}
+
+	void User_not_found() {
+		auto username = "name"; 
+		auto obj = user_storage.UserByName(username);
+		assertEqual(obj, Bson(null));
+	}
+
+	void Find_user_id() {
+		auto username = "name"; 
+		user_storage.Create("wrong", "");
+		user_storage.Create(username, "");
+		auto obj = user_storage.UserByName(username);
+		//Testing how to pass around id as string and then using it against mongo.
+		BsonObjectID oid = obj["_id"].get!BsonObjectID;
+		string sid = oid.toString();
+		auto objid = user_storage.UserById(sid);
+
+		assertEqual(objid["username"].get!string, username);
+	}
+
+	void Hashing() {
 		char[] pass = "aljksdn".dup;
 		string hashString = makeHash(toPassword(pass)).toString();
 		pass = "aljksdn".dup;
 		assert(isSameHash(toPassword(pass), parseHash(hashString)));
 		pass = "alksdn".dup;
 		assert(!isSameHash(toPassword(pass), parseHash(hashString)));
-	}
-}
-
-class UserTest : TestSuite {
-	bool i = false;
-
-	this() {
-		AddTest(&Test1);
-		AddTest(&Test1);
-	}
-
-	override void Setup() {
-		i = true;
-	}
-
-	override void Teardown() {
-		i = false;
-	}
-
-	void Test1() {
-		assert(i);
 	}
 }
 
