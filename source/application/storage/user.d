@@ -9,6 +9,7 @@ import vibe.db.mongo.mongo;
 import vibe.data.bson;
 
 import boiler.helpers;
+import boiler.testsuite;
 import application.Database;
 
 class User_storage {
@@ -145,4 +146,30 @@ class User_storage {
 		pass = "alksdn".dup;
 		assert(!isSameHash(toPassword(pass), parseHash(hashString)));
 	}
+}
+
+class UserTest : TestSuite {
+	bool i = false;
+
+	this() {
+		AddTest(&Test1);
+		AddTest(&Test1);
+	}
+
+	override void Setup() {
+		i = true;
+	}
+
+	override void Teardown() {
+		i = false;
+	}
+
+	void Test1() {
+		assert(i);
+	}
+}
+
+unittest {
+	auto userTest = new UserTest;
+	userTest.Run();
 }
