@@ -10,6 +10,8 @@ import vibe.db.mongo.mongo;
 import vibe.data.bson;
 
 import boiler.helpers;
+import boiler.testsuite;
+import application.testhelpers;
 import application.Database;
 
 struct Location {
@@ -113,10 +115,29 @@ class Event_storage {
 	}
 }
 
-//Creating a valid event should succeed
-unittest {
-	Database database = GetDatabase("test");
-	try {
+class EventTest : TestSuite {
+	Database database;
+	Event_storage event_storage;
+
+	this() {
+		database = GetDatabase("test");
+		event_storage = new Event_storage(database);
+
+		AddTest(&Creating_a_valid_event_should_succeed);
+		AddTest(&Update_event_should_succeed);
+		AddTest(&Find_events_in_area_should_return_all_events_in_the_area);
+		AddTest(&Find_events_by_user_should_return_all_events_created_by_the_user);
+		AddTest(&Delete_event);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("event");
+	}
+	
+	void Creating_a_valid_event_should_succeed() {
 		auto time = Clock.currTime();
 		NewEvent event = {
 			userId: BsonObjectID.fromString("000000000000000000000000"),
@@ -151,18 +172,8 @@ unittest {
 		assertEqual("Description", events[0].description);
 		assertEqual(BsonDate(time), BsonDate(events[0].createdTime));
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Update event should succeed
-unittest {
-	import application.testhelpers;
-	Database database = GetDatabase("test");
-	try {
-		auto event_storage = new Event_storage(database);
-
+	void Update_event_should_succeed() {
 		event_storage.Create(CoordinateEvent(Location(4, 4), "Inside"));
 
 		//Find and update the event.
@@ -210,18 +221,8 @@ unittest {
 		assertEqual(BsonDate(newTime), BsonDate(events[0].endTime));
 		assertEqual(newLocation, events[0].location);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Find events in area should return all events in the area
-unittest {
-	import application.testhelpers;
-	Database database = GetDatabase("test");
-	try {
-		auto event_storage = new Event_storage(database);
-		
+	void Find_events_in_area_should_return_all_events_in_the_area() {
 		event_storage.Create(CoordinateEvent(Location(4, 4), "Inside"));
 		event_storage.Create(CoordinateEvent(Location(2, 2), "Inside"));
 		event_storage.Create(CoordinateEvent(Location(5, 5), "Outside"));
@@ -251,17 +252,8 @@ unittest {
 			assertEqual("Inside", e.title);
 		}
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Find events by user should return all events created by the user
-unittest {
-	import application.testhelpers;
-	Database database = GetDatabase("test");
-	try {
-		auto event_storage = new Event_storage(database);
+	void Find_events_by_user_should_return_all_events_created_by_the_user() {
 		auto userId = "000000000000000000000000";
 		event_storage.Create(UserEvent(userId));
 		event_storage.Create(UserEvent(userId));
@@ -281,17 +273,8 @@ unittest {
 			assertEqual(userId, e.userId.toString());
 		}
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Find events by user should return all events created by the user
-unittest {
-	import application.testhelpers;
-	Database database = GetDatabase("test");
-	try {
-		auto event_storage = new Event_storage(database);
+	void Delete_event() {
 		auto userIdString = "000000000000000000000000";
 		event_storage.Create(UserEvent(userIdString));
 		event_storage.Create(UserEvent(userIdString));
@@ -313,7 +296,9 @@ unittest {
 		//writeln(events);
 		assertEqual(1, eventsAfterDelete.length);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
+}
+
+unittest {
+	auto eventTest = new EventTest;
+	eventTest.Run();
 }
