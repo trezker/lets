@@ -11,6 +11,7 @@ import vibe.stream.memory;
 import vibe.stream.operations;
 
 import boiler.helpers;
+import boiler.testsuite;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 

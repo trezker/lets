@@ -8,6 +8,7 @@ import boiler.ActionTester;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 import boiler.helpers;
+import boiler.testsuite;
 
 alias ActionCreator = Action delegate();
 

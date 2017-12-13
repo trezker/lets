@@ -5,6 +5,7 @@ import vibe.http.server;
 import vibe.data.bson;
 
 import boiler.ActionTester;
+import boiler.testsuite;
 import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;

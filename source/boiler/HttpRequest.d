@@ -8,6 +8,7 @@ import vibe.data.json;
 
 import boiler.helpers;
 import boiler.HttpResponse;
+import boiler.testsuite;
 
 interface Action {
 	public HttpResponse Perform(HttpRequest req);

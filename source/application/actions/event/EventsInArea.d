@@ -8,6 +8,7 @@ import vibe.data.json;
 
 import boiler.ActionTester;
 import boiler.helpers;
+import boiler.testsuite;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 import application.Database;
