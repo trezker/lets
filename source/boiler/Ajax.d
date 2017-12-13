@@ -54,33 +54,50 @@ class SuccessTestHandler : Action {
 	}
 }
 
-//Call without parameters should fail.
-unittest {
-	Ajax ajax = new Ajax();
 
-	ActionTester tester = new ActionTester(&ajax.Perform);
+class AjaxTest : TestSuite {
+	this() {
+		AddTest(&Call_without_parameters_should_fail);
+		AddTest(&Call_to_method_that_doesnt_exist_should_fail);
+		AddTest(&Call_to_method_that_exists_should_succeed);
+	}
 
-	Json jsonoutput = tester.GetResponseJson();
-	assertEqual(jsonoutput["success"].to!bool, false);
+	override void Setup() {
+	}
+
+	override void Teardown() {
+	}
+
+	void Call_without_parameters_should_fail() {
+		Ajax ajax = new Ajax();
+
+		ActionTester tester = new ActionTester(&ajax.Perform);
+
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, false);
+	}
+
+	void Call_to_method_that_doesnt_exist_should_fail() {
+		Ajax ajax = new Ajax();
+
+		ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"none\"}");
+
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, false);
+	}
+
+	void Call_to_method_that_exists_should_succeed() {
+		Ajax ajax = new Ajax();
+		ajax.SetActionCreator("test", () => new SuccessTestHandler);
+
+		ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"test\"}");
+
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, true);
+	}
 }
 
-//Call to method that doesn't exist should fail.
 unittest {
-	Ajax ajax = new Ajax();
-
-	ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"none\"}");
-
-	Json jsonoutput = tester.GetResponseJson();
-	assertEqual(jsonoutput["success"].to!bool, false);
-}
-
-//Call to method that exists should succeed.
-unittest {
-	Ajax ajax = new Ajax();
-	ajax.SetActionCreator("test", () => new SuccessTestHandler);
-
-	ActionTester tester = new ActionTester(&ajax.Perform, "{\"action\": \"test\"}");
-
-	Json jsonoutput = tester.GetResponseJson();
-	assertEqual(jsonoutput["success"].to!bool, true);
+	auto test = new AjaxTest;
+	test.Run();
 }
