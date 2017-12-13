@@ -66,33 +66,47 @@ void RenderVibeHttpResponseFromRequestAndResponse(HTTPServerResponse viberespons
 	viberesponse.writeBody(response.content, response.code);
 }
 
-//Create request with json
-unittest {
-	import std.stdio;
-	
-	auto sessionstore = new MemorySessionStore ();
-	Json json = Json.emptyObject;
-	json["key"] = "value";
-	auto request = new HttpRequest(sessionstore);
-	request.SetJsonFromString(serializeToJsonString(json));
+class HttpRequestTest : TestSuite {
+	this() {
+		AddTest(&Create_request_with_json);
+		AddTest(&Request_can_start_a_session);
+		AddTest(&Request_can_terminate_session);
+	}
 
-	assertEqual(request.json["key"].to!string, "value");
+	override void Setup() {
+	}
+
+	override void Teardown() {
+	}
+
+	void Create_request_with_json() {
+		auto sessionstore = new MemorySessionStore ();
+		Json json = Json.emptyObject;
+		json["key"] = "value";
+		auto request = new HttpRequest(sessionstore);
+		request.SetJsonFromString(serializeToJsonString(json));
+
+		assertEqual(request.json["key"].to!string, "value");
+	}
+
+	void Request_can_start_a_session() {
+		auto sessionstore = new MemorySessionStore ();
+		HttpRequest request = new HttpRequest(sessionstore);
+		Session session = request.StartSession();
+		assert(session);
+		assert(request.session);
+	}
+
+	void Request_can_terminate_session() {
+		auto sessionstore = new MemorySessionStore ();
+		HttpRequest request = new HttpRequest(sessionstore);
+		Session session = request.StartSession();
+		request.TerminateSession();
+		assert(!request.session);
+	}
 }
 
-//Request can start a session
 unittest {
-	auto sessionstore = new MemorySessionStore ();
-	HttpRequest request = new HttpRequest(sessionstore);
-	Session session = request.StartSession();
-	assert(session);
-	assert(request.session);
-}
-
-//Request can terminate session
-unittest {
-	auto sessionstore = new MemorySessionStore ();
-	HttpRequest request = new HttpRequest(sessionstore);
-	Session session = request.StartSession();
-	request.TerminateSession();
-	assert(!request.session);
+	auto test = new HttpRequestTest;
+	test.Run();
 }
