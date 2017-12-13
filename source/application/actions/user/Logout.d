@@ -10,6 +10,10 @@ import boiler.helpers;
 import boiler.HttpRequest;
 import boiler.HttpResponse;
 
+import application.Database;
+import application.storage.user;
+import application.testhelpers;
+
 class Logout: Action {
 	HttpResponse Perform(HttpRequest req) {
 		HttpResponse res = new HttpResponse;
@@ -29,22 +33,38 @@ class Logout: Action {
 	}
 }
 
-//Logout should succeed and session should not contain a user id
+class LogoutTest : TestSuite {
+	Database database;
+
+	this() {
+		database = GetDatabase("test");
+
+		AddTest(&Logout_should_succeed_and_session_should_not_contain_a_user_id);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("user");
+	}
+
+	void Logout_should_succeed_and_session_should_not_contain_a_user_id() {
+		CreateTestUser("testname", "testpass");
+
+		auto tester = TestLogin("testname", "testpass");
+
+		Logout logoutHandler = new Logout();
+		tester.Request(&logoutHandler.Perform);
+		
+		Json jsonoutput = tester.GetResponseJson();
+		assertEqual(jsonoutput["success"].to!bool, true);
+		string id = tester.GetResponseSessionValue!string("id");
+		assertEqual(id, "");
+	}
+}
+
 unittest {
-	import application.testhelpers;
-	import application.Database;
-	import application.Login;
-	import application.storage.user;
-
-	CreateTestUser("testname", "testpass");
-
-	auto tester = TestLogin("testname", "testpass");
-
-	Logout logoutHandler = new Logout();
-	tester.Request(&logoutHandler.Perform);
-	
-	Json jsonoutput = tester.GetResponseJson();
-	assertEqual(jsonoutput["success"].to!bool, true);
-	string id = tester.GetResponseSessionValue!string("id");
-	assertEqual(id, "");
+	auto test = new LogoutTest;
+	test.Run();
 }
