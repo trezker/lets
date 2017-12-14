@@ -14,6 +14,7 @@ import boiler.HttpRequest;
 import boiler.HttpResponse;
 import application.Database;
 import application.storage.event;
+import application.testhelpers;
 
 class MyEvents: Action {
 	Event_storage event_storage;
@@ -51,12 +52,24 @@ class MyEvents: Action {
 	}
 }
 
-//Find event without parameters should fail.
-unittest {
-	import application.testhelpers;
-	Database database = GetDatabase("test");
-	
-	try {
+class Test : TestSuite {
+	Database database;
+
+	this() {
+		database = GetDatabase("test");
+
+		AddTest(&Find_event_without_parameters_should_fail);
+		AddTest(&Find_events_with_parameters_should_find_events);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("event");
+	}
+
+	void Find_event_without_parameters_should_fail() {
 		string username = "test";
 		string password = "test";
 		CreateTestUser(username, password);
@@ -69,18 +82,8 @@ unittest {
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Find events with parameters should find events.
-unittest {
-	import application.testhelpers;
-	import std.datetime;
-	Database database = GetDatabase("test");
-	
-	try {
+	void Find_events_with_parameters_should_find_events() {
 		string username = "test";
 		string password = "test";
 		CreateTestUser(username, password);
@@ -110,25 +113,6 @@ unittest {
 		//writeln(events);
 		assertEqual(events.length, 2);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
-class Test : TestSuite {
-	Database database;
-
-	this() {
-		database = GetDatabase("test");
-
-		//AddTest(&);
-	}
-
-	override void Setup() {
-	}
-
-	override void Teardown() {
-	}
-
 }
 
 unittest {
