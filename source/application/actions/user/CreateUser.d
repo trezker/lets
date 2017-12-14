@@ -55,11 +55,26 @@ class CreateUser: Action {
 	}
 }
 
-//Create user without parameters should fail.
-unittest {
-	Database database = GetDatabase("test");
-	
-	try {
+class Test : TestSuite {
+	Database database;
+
+	this() {
+		database = GetDatabase("test");
+
+		AddTest(&Create_user_without_parameters_should_fail);
+		AddTest(&Create_user_with_name_and_password_should_succeed);
+		AddTest(&Created_user_should_have_a_hashed_password);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("user");
+	}
+
+
+	void Create_user_without_parameters_should_fail() {
 		CreateUser m = new CreateUser(new User_storage(database));
 
 		ActionTester tester = new ActionTester(&m.Perform);
@@ -67,16 +82,8 @@ unittest {
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
 	}
-	finally {
-		database.ClearCollection("user");
-	}
-}
 
-//Create user with name and password should succeed
-unittest {
-	Database database = GetDatabase("test");
-	
-	try {
+	void Create_user_with_name_and_password_should_succeed() {
 		CreateUser m = new CreateUser(new User_storage(database));
 		Json jsoninput = Json.emptyObject;
 		jsoninput["username"] = "testname";
@@ -87,16 +94,8 @@ unittest {
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, true);
 	}
-	finally {
-		database.ClearCollection("user");
-	}
-}
 
-//Created user should have a hashed password
-unittest {
-	Database database = GetDatabase("test");
-	
-	try {
+	void Created_user_should_have_a_hashed_password() {
 		string username = "testname";
 		string password = "testpass";
 
@@ -111,22 +110,6 @@ unittest {
 		auto obj = user_storage.UserByName(username);
 		assert(isSameHash(toPassword(password.dup), parseHash(obj["password"].get!string)));
 	}
-	finally {
-		database.ClearCollection("user");
-	}
-}
-
-class Test : TestSuite {
-	this() {
-		//AddTest(&);
-	}
-
-	override void Setup() {
-	}
-
-	override void Teardown() {
-	}
-
 }
 
 unittest {
