@@ -150,7 +150,11 @@ unittest {
 }
 
 class Test : TestSuite {
+	Database database;
+
 	this() {
+		database = GetDatabase("test");
+
 		//AddTest(&);
 	}
 
