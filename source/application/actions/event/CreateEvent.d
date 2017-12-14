@@ -13,6 +13,7 @@ import boiler.HttpRequest;
 import boiler.HttpResponse;
 import application.Database;
 import application.storage.event;
+import application.testhelpers;
 
 class CreateEvent: Action {
 	Event_storage event_storage;
@@ -51,13 +52,27 @@ class CreateEvent: Action {
 	}
 }
 
-//Create event without parameters should fail.
-unittest {
-	import application.testhelpers;
 
-	Database database = GetDatabase("test");
-	
-	try {
+class Test : TestSuite {
+	Database database;
+
+	this() {
+		database = GetDatabase("test");
+
+		AddTest(&Create_event_without_parameters_should_fail);
+		AddTest(&Create_event_with_all_parameters_but_not_logged_in_should_fail);
+		AddTest(&Create_event_with_all_parameters_and_logged_in_should_succeed);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("event");
+		database.ClearCollection("user");
+	}
+
+	void Create_event_without_parameters_should_fail() {
 		CreateTestUser("testname", "testpass");
 		auto tester = TestLogin("testname", "testpass");
 		CreateEvent m = new CreateEvent(new Event_storage(database));
@@ -67,17 +82,8 @@ unittest {
 		Json json = tester.GetResponseJson();
 		assertEqual(json["success"].to!bool, false);
 	}
-	finally {
-		database.ClearCollection("event");
-		database.ClearCollection("user");
-	}
-}
 
-//Create event with all parameters but not logged in should fail
-unittest {
-	Database database = GetDatabase("test");
-	
-	try {
+	void Create_event_with_all_parameters_but_not_logged_in_should_fail() {
 		NewEvent event = {
 			title: "Title",
 			description: "Description",
@@ -95,18 +101,8 @@ unittest {
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Create event with all parameters and logged in should succeed
-unittest {
-	import application.testhelpers;
-
-	Database database = GetDatabase("test");
-	
-	try {
+	void Create_event_with_all_parameters_and_logged_in_should_succeed() {
 		CreateTestUser("testname", "testpass");
 		auto tester = TestLogin("testname", "testpass");
 
@@ -130,27 +126,6 @@ unittest {
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, true);
 	}
-	finally {
-		database.ClearCollection("event");
-		database.ClearCollection("user");
-	}
-}
-
-class Test : TestSuite {
-	Database database;
-
-	this() {
-		database = GetDatabase("test");
-
-		//AddTest(&);
-	}
-
-	override void Setup() {
-	}
-
-	override void Teardown() {
-	}
-
 }
 
 unittest {
