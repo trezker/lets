@@ -66,7 +66,7 @@ void RenderVibeHttpResponseFromRequestAndResponse(HTTPServerResponse viberespons
 	viberesponse.writeBody(response.content, response.code);
 }
 
-class HttpRequestTest : TestSuite {
+class Test : TestSuite {
 	this() {
 		AddTest(&Create_request_with_json);
 		AddTest(&Request_can_start_a_session);
@@ -107,6 +107,6 @@ class HttpRequestTest : TestSuite {
 }
 
 unittest {
-	auto test = new HttpRequestTest;
+	auto test = new Test;
 	test.Run();
 }

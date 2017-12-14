@@ -52,7 +52,7 @@ class User_storage {
 
 }
 
-class UserTest : TestSuite {
+class Test : TestSuite {
 	Database database;
 	User_storage user_storage;
 
@@ -132,6 +132,6 @@ class UserTest : TestSuite {
 }
 
 unittest {
-	auto userTest = new UserTest;
-	userTest.Run();
+	auto test = new Test;
+	test.Run();
 }

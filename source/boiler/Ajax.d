@@ -55,7 +55,7 @@ class SuccessTestHandler : Action {
 }
 
 
-class AjaxTest : TestSuite {
+class Test : TestSuite {
 	this() {
 		AddTest(&Call_without_parameters_should_fail);
 		AddTest(&Call_to_method_that_doesnt_exist_should_fail);
@@ -98,6 +98,6 @@ class AjaxTest : TestSuite {
 }
 
 unittest {
-	auto test = new AjaxTest;
+	auto test = new Test;
 	test.Run();
 }

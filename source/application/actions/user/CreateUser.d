@@ -115,3 +115,21 @@ unittest {
 		database.ClearCollection("user");
 	}
 }
+
+class Test : TestSuite {
+	this() {
+		//AddTest(&);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+	}
+
+}
+
+unittest {
+	auto test = new Test;
+	test.Run();
+}

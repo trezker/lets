@@ -215,7 +215,7 @@ class RequestSessionDummyHandler {
 	}
 }
 
-class ActionTesterTest : TestSuite {
+class Test : TestSuite {
 	this() {
 		AddTest(&Creating_a_tester_with_handler_calls_the_handler);
 		AddTest(&Creating_a_tester_with_json_post_data_should_give_the_handler_access_to_the_data);
@@ -269,6 +269,6 @@ class ActionTesterTest : TestSuite {
 }
 
 unittest {
-	auto test = new ActionTesterTest;
+	auto test = new Test;
 	test.Run();
 }

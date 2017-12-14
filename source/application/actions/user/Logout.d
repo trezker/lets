@@ -33,7 +33,7 @@ class Logout: Action {
 	}
 }
 
-class LogoutTest : TestSuite {
+class Test : TestSuite {
 	Database database;
 
 	this() {
@@ -65,6 +65,6 @@ class LogoutTest : TestSuite {
 }
 
 unittest {
-	auto test = new LogoutTest;
+	auto test = new Test;
 	test.Run();
 }

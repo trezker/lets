@@ -115,7 +115,7 @@ class Event_storage {
 	}
 }
 
-class EventTest : TestSuite {
+class Test : TestSuite {
 	Database database;
 	Event_storage event_storage;
 
@@ -299,6 +299,6 @@ class EventTest : TestSuite {
 }
 
 unittest {
-	auto eventTest = new EventTest;
-	eventTest.Run();
+	auto test = new Test;
+	test.Run();
 }
