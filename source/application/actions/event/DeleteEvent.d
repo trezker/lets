@@ -13,6 +13,7 @@ import boiler.HttpRequest;
 import boiler.HttpResponse;
 import application.Database;
 import application.storage.event;
+import application.testhelpers;
 
 class DeleteEvent: Action {
 	Event_storage event_storage;
@@ -49,48 +50,42 @@ class DeleteEvent: Action {
 	}
 }
 
-//Delete event without parameters should fail.
-unittest {
-	import application.testhelpers;
+class Test : TestSuite {
+	Database database;
 
-	Database database = GetDatabase("test");
-	
-	try {
+	this() {
+		database = GetDatabase("test");
+
+		AddTest(&Delete_event_without_parameters_should_fail);
+		AddTest(&Delete_event_with_all_parameters_but_not_logged_in_should_fail);
+		AddTest(&Delete_event_with_all_parameters_and_logged_in_should_succeed_and_the_event_should_not_exist_after);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("event");
+		database.ClearCollection("user");
+	}
+
+	void Delete_event_without_parameters_should_fail() {
 		DeleteEvent m = new DeleteEvent(new Event_storage(database));
 		ActionTester tester = new ActionTester(&m.Perform);
 
 		Json json = tester.GetResponseJson();
 		assertEqual(json["success"].to!bool, false);
 	}
-	finally {
-		database.ClearCollection("event");
-		database.ClearCollection("user");
-	}
-}
 
-//Delete event with all parameters but not logged in should fail
-unittest {
-	Database database = GetDatabase("test");
-	
-	try {
+	void Delete_event_with_all_parameters_but_not_logged_in_should_fail() {
 		Json jsoninput = Json(["eventId": Json("000000000000000000000000")]);
 		DeleteEvent m = new DeleteEvent(new Event_storage(database));
 		ActionTester tester = new ActionTester(&m.Perform, jsoninput.toString);
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Delete event with all parameters and logged in should succeed and the event should not exist after
-unittest {
-	import application.testhelpers;
-
-	Database database = GetDatabase("test");
-	
-	try {
+	void Delete_event_with_all_parameters_and_logged_in_should_succeed_and_the_event_should_not_exist_after() {
 		CreateTestUser("testname", "testpass");
 		auto tester = TestLogin("testname", "testpass");
 		string userIdString = tester.GetResponseSessionValue!string("id");
@@ -118,26 +113,6 @@ unittest {
 		//writeln(events);
 		assertEqual(0, eventsAfterDelete.length);
 	}
-	finally {
-		database.ClearCollection("event");
-		database.ClearCollection("user");
-	}
-}
-class Test : TestSuite {
-	Database database;
-
-	this() {
-		database = GetDatabase("test");
-
-		//AddTest(&);
-	}
-
-	override void Setup() {
-	}
-
-	override void Teardown() {
-	}
-
 }
 
 unittest {

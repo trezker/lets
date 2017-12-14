@@ -1,6 +1,7 @@
 module application.EventsInArea;
 
 import std.stdio;
+import std.datetime;
 import dauth;
 import vibe.http.server;
 import vibe.db.mongo.mongo;
@@ -13,6 +14,7 @@ import boiler.HttpRequest;
 import boiler.HttpResponse;
 import application.Database;
 import application.storage.event;
+import application.testhelpers;
 
 class EventsInArea: Action {
 	Event_storage event_storage;
@@ -45,11 +47,24 @@ class EventsInArea: Action {
 	}
 }
 
-//Find event without parameters should fail.
-unittest {
-	Database database = GetDatabase("test");
-	
-	try {
+class Test : TestSuite {
+	Database database;
+
+	this() {
+		database = GetDatabase("test");
+
+		AddTest(&Find_event_without_parameters_should_fail);
+		AddTest(&Find_event_without_parameters_should_fail);
+	}
+
+	override void Setup() {
+	}
+
+	override void Teardown() {
+		database.ClearCollection("event");
+	}
+
+	void Find_event_without_parameters_should_fail() {
 		EventsInArea m = new EventsInArea(new Event_storage(database));
 
 		ActionTester tester = new ActionTester(&m.Perform);
@@ -57,18 +72,8 @@ unittest {
 		Json jsonoutput = tester.GetResponseJson();
 		assertEqual(jsonoutput["success"].to!bool, false);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
 
-//Find event with parameters should find event.
-unittest {
-	import application.testhelpers;
-	import std.datetime;
-	Database database = GetDatabase("test");
-	
-	try {
+	void Find_event_with_parameters_should_find_event() {
 		auto event_storage = new Event_storage(database);
 		event_storage.Create(CoordinateEvent(Location(2, 2), "Inside"));
 		event_storage.Create(CoordinateEvent(Location(5, 5), "Outside"));
@@ -93,25 +98,6 @@ unittest {
 		Event[] events = deserialize!(JsonSerializer, Event[])(jsonoutput["events"]);
 		assertEqual(events.length, 1);
 	}
-	finally {
-		database.ClearCollection("event");
-	}
-}
-class Test : TestSuite {
-	Database database;
-
-	this() {
-		database = GetDatabase("test");
-
-		//AddTest(&);
-	}
-
-	override void Setup() {
-	}
-
-	override void Teardown() {
-	}
-
 }
 
 unittest {
