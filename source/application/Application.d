@@ -1,5 +1,6 @@
 module application.Application;
 
+import std.stdio;
 import vibe.http.server;
 import vibe.core.log;
 
@@ -40,7 +41,8 @@ class Application {
 	}
 
 	string RewritePath(HttpRequest request) {
-		if(!request.session) {
+		//writeln(request.path);
+		if(!request.session && request.path != "/test") {
 			return "/login";
 		}
 		return request.path;
