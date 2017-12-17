@@ -16,14 +16,23 @@ var TestSuite = function() {
 	var self = this;
 	self.iFrameDOM = $("iframe#test").contents();
 
-	self.log_in = function() {
-		$(self.iFrameDOM.find("input")[0]).sendkeys("a");
-		$(self.iFrameDOM.find("input")[1]).sendkeys("a");
+	self.run = function() {
+		self.log_in().then(() => {
+			//TODO: Teardown
+		});
+	};
 
-		wait(1).then(() => {
-			$(self.iFrameDOM.find("button")[1]).click();
-			wait(1000).then(() => {
+	self.log_in = function() {
+		return new Promise((resolve, reject) => {
+			$(self.iFrameDOM.find("input")[0]).sendkeys("a");
+			$(self.iFrameDOM.find("input")[1]).sendkeys("a");
+
+			wait(1).then(() => {
+				$(self.iFrameDOM.find("button")[1]).click();
+				return wait(1000);
+			}).then(() => {
 				assertElementExists("[data-bind='click: sign_out']");
+				resolve();
 			});
 		});
 	}
@@ -31,7 +40,7 @@ var TestSuite = function() {
 
 function iframeLoaded() {
 	var suite = new TestSuite();
-	suite.log_in();
+	suite.run();
 }
 
 $("#test").attr("src", "/");
