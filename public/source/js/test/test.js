@@ -16,13 +16,32 @@ var TestSuite = function() {
 	var self = this;
 	self.iFrameDOM = $("iframe#test").contents();
 
+	self.tests = ["Log_in"];
+	self.currentTest = 0;
+
 	self.run = function() {
-		self.log_in().then(() => {
-			//TODO: Teardown
+		console.log("Running tests");
+		self.currentTest = 0;
+		self.next();
+	};
+
+	self.next = function() {
+		if(self.currentTest >= self.tests.length) {
+			console.log("Done");
+			return;
+		}
+		console.log("Test: " + self.tests[self.currentTest].replace("_", " "));
+		self[self.tests[self.currentTest]]().then(() => {
+			self.teardown();
+			self.currentTest++;
+			self.next();
 		});
 	};
 
-	self.log_in = function() {
+	self.teardown = function() {
+	}
+
+	self.Log_in = function() {
 		return new Promise((resolve, reject) => {
 			$(self.iFrameDOM.find("input")[0]).sendkeys("a");
 			$(self.iFrameDOM.find("input")[1]).sendkeys("a");
@@ -38,7 +57,12 @@ var TestSuite = function() {
 	}
 };
 
+var runOnce = false;
 function iframeLoaded() {
+	if(runOnce) {
+		return;
+	}
+	runOnce = true;
 	var suite = new TestSuite();
 	suite.run();
 }
